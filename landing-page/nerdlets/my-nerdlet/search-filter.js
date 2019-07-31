@@ -4,7 +4,7 @@ import ReactTable from "react-table";
 import 'react-table/react-table.css';
 import {Stack, StackItem} from "nr1";
 
-export default class MyNerdlet extends React.Component {
+export default class SearchFilter extends React.Component {
     static propTypes = {
         width: PropTypes.number,
         height: PropTypes.number,
