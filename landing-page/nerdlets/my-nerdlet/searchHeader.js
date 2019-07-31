@@ -13,37 +13,35 @@ export default class SearchHeader extends React.Component {
     constructor() {
         super();
         this.state = {
-          data: {env: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}], 
+          data: {env: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"},{environment:"globalqa"},{environment:"globaldev"},{environment:"prod"},{environment:"globalprod"}], 
                  cluster: [{cluster:"pdx2"}, {cluster:"mia1"}, {cluster:"euc1"}],
                  logicalCluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
                  group: [{group:"platform"}, {group:"cap"}, {group:"missions"}]  }
         };
       }
     
-    tableElem (data, header) {
+    tableElem (data, header, accessor) {
 
         return (
-            <div style={{ height: "10px" }}>
+            <div style={{ height: "10px", marginTop: "20px" }}>
               <ReactTable
                 data={data}
                 filterable
-                defaultFilterMethod={(filter, row) => {
-                  console.log(row)
-                  String(row[filter.id]) === filter.value }
-                }
+                defaultFilterMethod={(filter, row) => row[filter.id].startsWith(filter.value) }
                 columns={[
-   
                       {
                         Header: header,
-                        accessor: "environment",
-                        filterMethod: (filter, row) => {
-                          console.log(row[filter.id])
-                          console.log(filter.value)
-                          row[filter.id].startsWith(filter.value)}
+                        headerStyle: {"font-weight": "bold"},
+                        accessor: accessor,
                       }
-    
                 ]}
                 className="-striped -highlight"
+                defaultPageSize={data.length}
+                showPagination={false}
+                style={{
+                    height: "300px", // This will force the table body to overflow and scroll, since there is not enough room
+                    width: "300px"
+                  }}
               />
               <br />
             </div>
@@ -56,19 +54,19 @@ export default class SearchHeader extends React.Component {
         return <Stack
                     alignmentType={Stack.ALIGNMENT_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.HORIZONTAL}
-                    distributionType={Stack.DISTRIBUTION_TYPE.FILL_EVENLY}
+                    distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
                     gapType={Stack.GAP_TYPE.EXTRA_LOOSE}>
                         <StackItem>
-                            {this.tableElem(data.env, "Environment")}
+                            {this.tableElem(data.env, "Environment", "environment")}
                         </StackItem>
                         <StackItem>
-                            {this.tableElem(data.cluster, "Cluster")}
+                            {this.tableElem(data.cluster, "Cluster", "cluster")}
                         </StackItem>
                         <StackItem>
-                            {this.tableElem(data.logicalCluster, "Cluster Logical")}
+                            {this.tableElem(data.logicalCluster, "Cluster Logical", "lcluster")}
                         </StackItem>
                         <StackItem>
-                            {this.tableElem(data.group, "Groups")}
+                            {this.tableElem(data.group, "Groups", "group")}
                         </StackItem>
                 </Stack>
       }    
