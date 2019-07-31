@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import SearchHeader from './SearchHeader';
 
 export default class MyNerdlet extends React.Component {
     static propTypes = {
@@ -8,6 +9,6 @@ export default class MyNerdlet extends React.Component {
     };
 
     render() {
-        return <h1>Hello World!</h1>;
+    return <SearchHeader/> 
     }
 }
