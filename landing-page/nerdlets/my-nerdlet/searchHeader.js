@@ -8,17 +8,19 @@ export default class SearchHeader extends React.Component {
     static propTypes = {
         width: PropTypes.number,
         height: PropTypes.number,
+        data: PropTypes.object
     };
 
-    constructor() {
-        super();
-        this.state = {
-          data: {env: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"},{environment:"globalqa"},{environment:"globaldev"},{environment:"prod"},{environment:"globalprod"}], 
-                 cluster: [{cluster:"pdx2"}, {cluster:"mia1"}, {cluster:"euc1"}],
-                 logicalCluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
-                 group: [{group:"platform"}, {group:"cap"}, {group:"missions"}]  }
-        };
-      }
+    constructor(Props) {
+        super(Props);
+        /*this.state = {
+            data: {env: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}],
+                   dataCenter: [{dcenter:"pdx2"}, {dcenter:"mia1"}, {dcenter:"euc1"}],
+                   logicalCluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
+                   group: [{group:"platform"}, {group:"cap"}, {group:"missions"}],
+                   name: [{name:"wallets"}, {name:"platform-war"}, {name:"connect2id"}]}
+          };*/
+        }
     
     tableElem (data, header, accessor) {
 
@@ -31,7 +33,7 @@ export default class SearchHeader extends React.Component {
                 columns={[
                       {
                         Header: header,
-                        headerStyle: {"font-weight": "bold"},
+                        headerStyle: {"fontWeight": "bold"},
                         accessor: accessor,
                       }
                 ]}
@@ -49,25 +51,28 @@ export default class SearchHeader extends React.Component {
     }
 
     render() {
-        const { data } = this.state;
+        const { data } = this.props;
 
         return <Stack
                     alignmentType={Stack.ALIGNMENT_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.HORIZONTAL}
                     distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
                     gapType={Stack.GAP_TYPE.EXTRA_LOOSE}>
-                        <StackItem>
-                            {this.tableElem(data.env, "Environment", "environment")}
-                        </StackItem>
-                        <StackItem>
-                            {this.tableElem(data.cluster, "Cluster", "cluster")}
-                        </StackItem>
-                        <StackItem>
-                            {this.tableElem(data.logicalCluster, "Cluster Logical", "lcluster")}
-                        </StackItem>
-                        <StackItem>
-                            {this.tableElem(data.group, "Groups", "group")}
-                        </StackItem>
+						<StackItem>
+							{this.tableElem(data.env, "Environment", "environment")}
+						</StackItem>
+						<StackItem>
+							{this.tableElem(data.dataCenter, "Data Center", "dcenter")}
+						</StackItem>
+						<StackItem>
+							{this.tableElem(data.logicalCluster, "Logical Cluster", "lcluster")}
+						</StackItem>
+						<StackItem>
+							{this.tableElem(data.group, "Groups", "group")}
+						</StackItem>
+						<StackItem>
+							{this.tableElem(data.name, "Name", "name")}
+						</StackItem>
                 </Stack>
       }    
 
