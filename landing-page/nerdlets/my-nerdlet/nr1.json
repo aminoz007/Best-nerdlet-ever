@@ -1,7 +1,7 @@
 {
     "schemaType": "NERDLET",
     "id": "my-nerdlet",
-    "description": "Describe me",
-    "displayName": "my-nerdlet"
+    "description": "A starting point to explore your data!!",
+    "displayName": "Landing page"
 }
 

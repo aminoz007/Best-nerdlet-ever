@@ -1,8 +1,8 @@
 {
     "schemaType": "LAUNCHER",
     "id": "my-launcher",
-    "description": "Describe me",
-    "displayName": "LandingPage",
-    "icon": "interface_placeholders_icon-placeholder",
+    "description": "Start exploring your data!!",
+    "displayName": "Riot's Landing Page",
+    "icon": "location_location_home",
     "rootNerdletId": "86549f01-8994-4980-a215-5de6653fef8b.my-nerdlet"
 }
