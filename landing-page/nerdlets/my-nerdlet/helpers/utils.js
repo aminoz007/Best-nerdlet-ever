@@ -1,3 +1,5 @@
+import { RFC_190_SCOPE } from "./constants";
+
 // For a deep object, this function will return all properties for a giving key
 const findNested = (obj, key) => {
     if (obj.hasOwnProperty(key))
@@ -15,38 +17,101 @@ const findNested = (obj, key) => {
 
 /*  Transform RFC 190 Scope attributes into an object that can be used by searchHeader component
     Example of acceptable format:
-    {env: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}],
-        dataCenter: [{dcenter:"pdx2"}, {dcenter:"mia1"}, {dcenter:"euc1"}],
-        logicalCluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
+    {environment: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}],
+        dcenter: [{dcenter:"pdx2"}, {dcenter:"mia1"}, {dcenter:"euc1"}],
+        lcluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
         group: [{group:"platform"}, {group:"cap"}, {group:"missions"}],
         name: [{name:"wallets"}, {name:"platform-war"}, {name:"connect2id"}]}
 */
 const formatRfcAtt = (attributesArray) => {
-    const result = {env:[],dataCenter:[],logicalCluster:[],group:[],name:[]}
+
+    const result = {}
+    result[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR] = []
+    result[RFC_190_SCOPE.DATA_CENTER.ACCESSOR] = []
+    result[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR] = []
+    result[RFC_190_SCOPE.GROUP.ACCESSOR] = []
+    result[RFC_190_SCOPE.NAME.ACCESSOR] = []
+
     attributesArray.map(attribute => {
         const elements = attribute.split('.')
         if (elements.length == 5) {
             // After splitting the attribute, there is a chance we have duplicates. Let's make sure not to keep them
-            if (result.env.indexOf(elements[0]) == -1) {
-                result.env.push(elements[0])
-            } if (result.dataCenter.indexOf(elements[1]) == -1) {
-                result.dataCenter.push(elements[1])
-            } if (result.logicalCluster.indexOf(elements[2]) == -1) {
-                result.logicalCluster.push(elements[2])
-            } if (result.group.indexOf(elements[3]) == -1) {
-                result.group.push(elements[3])
-            } if (result.name.indexOf(elements[4]) == -1) {
-                result.name.push(elements[4])
+            if (result[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].indexOf(elements[0]) == -1) {
+                result[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].push(elements[0])
+            } if (result[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].indexOf(elements[1]) == -1) {
+                result[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].push(elements[1])
+            } if (result[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].indexOf(elements[2]) == -1) {
+                result[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].push(elements[2])
+            } if (result[RFC_190_SCOPE.GROUP.ACCESSOR].indexOf(elements[3]) == -1) {
+                result[RFC_190_SCOPE.GROUP.ACCESSOR].push(elements[3])
+            } if (result[RFC_190_SCOPE.NAME.ACCESSOR].indexOf(elements[4]) == -1) {
+                result[RFC_190_SCOPE.NAME.ACCESSOR].push(elements[4])
             }
         }
     })
-    result.env = result.env.map(env => {return {environment:env}})
-    result.dataCenter = result.dataCenter.map(dc => {return {dcenter:dc}})
-    result.logicalCluster = result.logicalCluster.map(lc => {return {lcluster:lc}})
-    result.group = result.group.map(gr => {return {group:gr}})
-    result.name = result.name.map(na => {return {name:na}})
+    result[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR] = result[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].map(env => {
+        const obj= {} 
+        obj[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR] = env
+        return obj
+    })
+    result[RFC_190_SCOPE.DATA_CENTER.ACCESSOR] = result[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].map(dc => {
+        const obj= {} 
+        obj[RFC_190_SCOPE.DATA_CENTER.ACCESSOR] = dc
+        return obj
+    })
+    result[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR] = result[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].map(lc => {
+        const obj= {} 
+        obj[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR] = lc
+        return obj
+    })
+    result[RFC_190_SCOPE.GROUP.ACCESSOR] = result[RFC_190_SCOPE.GROUP.ACCESSOR].map(gr => {
+        const obj= {} 
+        obj[RFC_190_SCOPE.GROUP.ACCESSOR] = gr
+        return obj
+    })
+    result[RFC_190_SCOPE.NAME.ACCESSOR] = result[RFC_190_SCOPE.NAME.ACCESSOR].map(na => {
+        const obj= {} 
+        obj[RFC_190_SCOPE.NAME.ACCESSOR] = na
+        return obj
+    })
 
     return result
 }
 
-export { findNested, formatRfcAtt }
+// REQ: Upon selecting/deselecting parts of the scopes, the other lists would dynamically update 
+// to show what remaining options existed for them to select
+// Make sure not to filter the current table where the selection is made 
+const filterAttrs = (rawData, selectedRows, formattedData) => {
+    const filters = selectedRows.selected
+    const filteredData = []
+    rawData.forEach(attr => {
+        const elements = attr.split('.')
+        if (!filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].length || filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].includes(elements[0])) {
+            if (!filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].length || filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].includes(elements[1])) {
+                if (!filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].length || filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].includes(elements[2])) {
+                    if (!filters[RFC_190_SCOPE.GROUP.ACCESSOR].length || filters[RFC_190_SCOPE.GROUP.ACCESSOR].includes(elements[3])) {
+                        if (!filters[RFC_190_SCOPE.NAME.ACCESSOR].length || filters[RFC_190_SCOPE.NAME.ACCESSOR].includes(elements[4])) {
+                            filteredData.push(attr)
+                        }
+                    }
+                }
+            }
+        } 
+    })
+
+    // If all unselected then return all data in all lists including the current list
+    if (!filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].length && !filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].length &&
+        !filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].length && !filters[RFC_190_SCOPE.GROUP.ACCESSOR].length &&
+        !filters[RFC_190_SCOPE.NAME.ACCESSOR].length) {
+            return formatRfcAtt(rawData)   
+    }
+
+    const filteredDataFormatted = formatRfcAtt(filteredData)
+    // Do not filter current list
+    filteredDataFormatted[selectedRows.lastSelectedTab] = formattedData[selectedRows.lastSelectedTab]
+
+    return filteredDataFormatted
+}
+
+
+export { findNested, formatRfcAtt, filterAttrs }

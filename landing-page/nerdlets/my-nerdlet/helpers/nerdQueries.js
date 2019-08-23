@@ -12,14 +12,15 @@ const getMetrics = () => {
           }` });
         q.then((results) => {
             const accounts = (((results || {}).data || {}).actor || {}).accounts || []
-            const rfcScopePromises = metricsQuery(accounts.map(acct => acct.id))
+            const nrqlQuery = "FROM Metric SELECT uniques(rfc190Scope) since 1 day ago"
+            const rfcScopePromises = _buildGraphQuery(accounts.map(acct => acct.id), nrqlQuery)
             Promise.all(rfcScopePromises).then(values => {
                 const rfcScopeValues = []
                 values.forEach(value => {
                     const members = findNested(value, 'member') //Get all "member" values which contains the rfcScope attribute in a nested objects
                     rfcScopeValues.push.apply(rfcScopeValues,members)
                 })
-                resolve(formatRfcAtt(rfcScopeValues))
+                resolve(rfcScopeValues)
             })
         })
         .catch((error) => {
@@ -28,11 +29,11 @@ const getMetrics = () => {
     }) 
 }
 
-const metricsQuery = (accounts) => {
+const _buildGraphQuery = (accounts, nrqlQuery) => {
 
     const nrqlMetricsQuery = accounts.map((account,index) => 
         `account${index}:account(id: ${account}) {
-            nrql(query: "FROM Metric SELECT uniques(rfc190Scope) since 1 day ago") {
+            nrql(query: "${nrqlQuery}") {
             results
             }
         }`
@@ -54,7 +55,6 @@ const metricsQuery = (accounts) => {
     })
     return promises
 }
-
 
 
 export { getMetrics }
