@@ -8,9 +8,7 @@ import { RFC_190_SCOPE } from '../helpers/constants';
 export default class SearchHeader extends React.Component {
     static propTypes = {
         width: PropTypes.number,
-        height: PropTypes.number,
-        data: PropTypes.object,
-        onSearchClick: PropTypes.func
+        height: PropTypes.number
     };
 
     constructor(Props) {
@@ -24,7 +22,7 @@ export default class SearchHeader extends React.Component {
     tableElem (data, header, accessor) {
 
         return (
-            <div style={{ height: "10px", marginTop: "20px" }}>
+            <div>
               <ReactTable
                 data={data}
                 filterable
@@ -41,7 +39,8 @@ export default class SearchHeader extends React.Component {
                 showPagination={false}
                 style={{
                     height: "300px", // This will force the table body to overflow and scroll, since there is not enough room
-                    width: "300px"
+                    width: "300px",
+                    marginTop: "20px"
                   }}
                 
                 // Select/Deslect rows

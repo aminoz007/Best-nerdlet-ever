@@ -83,7 +83,7 @@ const formatRfcAtt = (attributesArray) => {
 // Make sure not to filter the current table where the selection is made 
 const filterAttrs = (rawData, selectedRows, formattedData) => {
     const filters = selectedRows.selected
-    const filteredData = []
+    const filteredRawData = []
     rawData.forEach(attr => {
         const elements = attr.split('.')
         if (!filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].length || filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].includes(elements[0])) {
@@ -91,27 +91,29 @@ const filterAttrs = (rawData, selectedRows, formattedData) => {
                 if (!filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].length || filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].includes(elements[2])) {
                     if (!filters[RFC_190_SCOPE.GROUP.ACCESSOR].length || filters[RFC_190_SCOPE.GROUP.ACCESSOR].includes(elements[3])) {
                         if (!filters[RFC_190_SCOPE.NAME.ACCESSOR].length || filters[RFC_190_SCOPE.NAME.ACCESSOR].includes(elements[4])) {
-                            filteredData.push(attr)
+                            filteredRawData.push(attr)
                         }
                     }
                 }
             }
         } 
     })
-
-    // If all unselected then return all data in all lists including the current list
-    if (!filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].length && !filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].length &&
-        !filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].length && !filters[RFC_190_SCOPE.GROUP.ACCESSOR].length &&
-        !filters[RFC_190_SCOPE.NAME.ACCESSOR].length) {
-            return formatRfcAtt(rawData)   
+    
+    const filteredDataFormatted = formatRfcAtt(filteredRawData)
+    // Do not filter current list and get bigger list in case of deselection
+    if (formattedData[selectedRows.lastSelectedTab]>filteredDataFormatted[selectedRows.lastSelectedTab]) {
+        filteredDataFormatted[selectedRows.lastSelectedTab] = formattedData[selectedRows.lastSelectedTab]
     }
 
-    const filteredDataFormatted = formatRfcAtt(filteredData)
-    // Do not filter current list
-    filteredDataFormatted[selectedRows.lastSelectedTab] = formattedData[selectedRows.lastSelectedTab]
+    return { filteredDataFormatted, filteredRawData }
+}
 
-    return filteredDataFormatted
+const dateFormattingInLogs = (logs) => {
+    return logs.map(log => {
+        log["timestamp"] = new Date(log["timestamp"]).toString().substr(4,20)
+        return log
+    }) 
 }
 
 
-export { findNested, formatRfcAtt, filterAttrs }
+export { findNested, formatRfcAtt, filterAttrs, dateFormattingInLogs }
