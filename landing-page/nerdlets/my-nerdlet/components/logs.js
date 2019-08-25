@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from "react-table";
 import 'react-table/react-table.css';
-import {Stack, StackItem} from "nr1";
+import {Stack, StackItem} from 'nr1';
 import { LOGS } from '../helpers/constants';
 import { dateFormattingInLogs } from '../helpers/utils';
+import LogsSub from './logsSub';
 
 export default class Logs extends React.Component {
     static propTypes = {
@@ -13,7 +14,7 @@ export default class Logs extends React.Component {
     };
 
     constructor(Props) {
-        super(Props);
+        super(Props)
       }
     
     logTable (data, columns) {
@@ -27,10 +28,14 @@ export default class Logs extends React.Component {
                 className="-striped -highlight"
                 defaultPageSize={data.length}
                 showPagination={false}
+                freezeWhenExpanded={true}
                 style={{
                   height: "400px"
                 }}
-                SubComponent={() => <div style={{ padding: "10px" }}>Hello</div>}
+                SubComponent={(row) => {
+                    return <LogsSub row={row}/>
+                  }
+                }
               />
           )
     }
@@ -60,7 +65,7 @@ export default class Logs extends React.Component {
         return column
       })
     }
-
+    
     render() {
       const { data } = this.props
       const columns = this.columns(data[0])

@@ -15,13 +15,13 @@ const findNested = (obj, key) => {
     return res;
 }
 
-/*  Transform RFC 190 Scope attributes into an object that can be used by searchHeader component
-    Example of acceptable format:
-    {environment: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}],
-        dcenter: [{dcenter:"pdx2"}, {dcenter:"mia1"}, {dcenter:"euc1"}],
-        lcluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
-        group: [{group:"platform"}, {group:"cap"}, {group:"missions"}],
-        name: [{name:"wallets"}, {name:"platform-war"}, {name:"connect2id"}]}
+/** Transform RFC 190 Scope attributes into an object that can be used by searchHeader component
+ *  Example of acceptable format:
+ *  {environment: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}],
+ *      dcenter: [{dcenter:"pdx2"}, {dcenter:"mia1"}, {dcenter:"euc1"}],
+ *      lcluster: [{lcluster:"prod"},{lcluster:"na1"},{lcluster:"br1"},{lcluster:"la2"}],
+ *      group: [{group:"platform"}, {group:"cap"}, {group:"missions"}],
+ *      name: [{name:"wallets"}, {name:"platform-war"}, {name:"connect2id"}]}
 */
 const formatRfcAtt = (attributesArray) => {
 

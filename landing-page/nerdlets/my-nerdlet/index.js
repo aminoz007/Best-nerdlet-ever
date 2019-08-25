@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SearchHeader from './components/searchHeader';
 import Logs from'./components/logs';
-import { getMetrics, getLogs } from './helpers/nerdQueries';
+import Metrics from'./components/metrics';
+import { getScopes, getLogs, getMetrics } from './helpers/nerdQueries';
 import { Spinner } from 'nr1';
 import { formatRfcAtt, filterAttrs } from './helpers/utils';
 
@@ -22,7 +23,8 @@ export default class MyNerdlet extends React.Component {
             filteredRawData: null,
             selected: null,
             displayDetails: false,
-            logs: null
+            logs: null,
+            metrics: null
         }
     }
 
@@ -32,11 +34,11 @@ export default class MyNerdlet extends React.Component {
     }
 
     onSearchClick() {
-        this.setState({displayDetails:true})
         if (this.state.filteredRawData && this.state.filteredRawData.length !== this.state.rawData.length) {
+            this.setState({displayDetails:true})
             getLogs(this.state.filteredRawData).then(logs => this.setState({logs}))
+            getMetrics(this.state.filteredRawData).then(metrics => this.setState({metrics}))
         } else {
-            this.setState({displayDetails:false})
             // TODO
             console.log("popup here: please select something")
         }
@@ -44,8 +46,12 @@ export default class MyNerdlet extends React.Component {
 
     getDetails() {
         if(this.state.displayDetails) {
-            if(this.state.logs) {
-                return <Logs data={this.state.logs}/>
+            if(this.state.logs && this.state.metrics) {
+                return (
+                <React.Fragment>
+                    <Logs data={this.state.logs}/>
+                    <Metrics data={this.state.metrics}/>
+                </React.Fragment>)
             } else {
                 return <Spinner fillContainer type={Spinner.TYPE.INLINE} />
             }
@@ -53,7 +59,7 @@ export default class MyNerdlet extends React.Component {
     }
 
     componentDidMount(){
-        getMetrics().then(data => {
+        getScopes().then(data => {
             const formattedData = formatRfcAtt(data)
             this.setState({formattedData:formattedData, rawData:data})
         })

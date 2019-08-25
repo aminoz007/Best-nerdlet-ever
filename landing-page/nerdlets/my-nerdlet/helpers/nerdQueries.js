@@ -1,7 +1,7 @@
-import { NerdGraphQuery } from 'nr1';
+import { NerdGraphQuery, EntityByIdQuery } from 'nr1';
 import { findNested } from './utils'
 
-const getMetrics = () => {
+const getScopes = () => {
     return new Promise(function(resolve, reject) {
         const q = NerdGraphQuery.query({ query: `{
             actor {
@@ -60,6 +60,62 @@ const getLogs = (scopes) => {
     }) 
 }
 
+const getLogById = (guid, messageId) => {
+    return new Promise(function(resolve, reject) {
+        EntityByIdQuery.query({entityId:guid}).then(entity => {
+            const acctId = findNested(entity, 'accountId')
+            if(acctId){
+                NerdGraphQuery.query({ query:`{
+                    actor {
+                        account(id: ${acctId}) {
+                            nrql(query: "FROM Log  SELECT * WHERE messageId='${messageId}'") {
+                            results
+                            }
+                        }
+                    }
+                }`
+                })
+                .then (details => resolve(...findNested(details,'results')))
+            }
+        })
+        .catch((error) => {
+            reject(error)
+        })   
+    })
+}
+
+const getMetrics = (scopes) => {
+    return new Promise(function(resolve, reject) {
+        const q = NerdGraphQuery.query({ query: `{
+            actor {
+              accounts {
+                id
+              }
+            }
+          }` });
+        q.then((results) => {
+            const accounts = (((results || {}).data || {}).actor || {}).accounts || []
+            const nrqlQuery = _buildMetricsNrqlQuery(scopes)
+            const metricsPromises = _buildGraphQuery(accounts.map(acct => acct.id), nrqlQuery)
+            Promise.all(metricsPromises).then(values => {
+                const metrics = []
+                values.forEach(value => {
+                    let metricsResults = findNested(value, 'results') //Get all "results" values which contains the logs attributes
+                    if (Array.isArray(metricsResults)) {
+                        metricsResults = metricsResults.filter(e => e.length) //Do not add empty arrays 
+                    } 
+                    metrics.push.apply(metrics, ...metricsResults)     
+                })
+                console.log(metrics)
+                resolve(metrics)
+            })
+        })
+        .catch((error) => {
+            reject(error)
+        })    
+    }) 
+}
+
 const _buildGraphQuery = (accounts, nrqlQuery) => {
 
     const nrqlMetricsQuery = accounts.map((account,index) => 
@@ -94,4 +150,11 @@ const _buildLogsNrqlQuery = (scopes) => {
     return nrqlQuery
 }
 
-export { getMetrics, getLogs }
+const _buildMetricsNrqlQuery = (scopes) => {
+    //Careful, reduce return the same value if array.length=1
+    const listScopes = scopes.map(scope => `'${scope}'`).reduce((acc,current) => `${current},${acc}`)
+    const nrqlQuery = `FROM Metric SELECT metricName where rfc190Scope in (${listScopes}) since 1 day ago`
+    return nrqlQuery
+}
+
+export { getScopes, getLogs, getLogById, getMetrics }
