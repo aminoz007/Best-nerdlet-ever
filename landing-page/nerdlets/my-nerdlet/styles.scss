@@ -1,3 +1,5 @@
+
+@import url('//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css');
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
     font-weight: 300;
@@ -19,6 +21,26 @@ body {
   font-size: 18px;
 }
 
+.listHeader {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+  font-size: 14px;
+  list-style-type: square;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+.listContent {
+  padding-left:5em;
+  margin: 5px;
+  list-style-type: disc;
+}
+
+.ui.styled.accordion{
+  width: 100%;
+  max-height:400px;
+  overflow-y:scroll;
+}
+
 // Tree CSS
 .toggle-icon {
   display: inline-block; }
@@ -30,6 +52,7 @@ body {
 
 .tree-item-group {
   list-style-type: none;
+  width: 30%;
   padding-left: 0;
   border-top: 1px solid #ccc; }
 

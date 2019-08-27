@@ -1,4 +1,4 @@
-import { NerdGraphQuery, EntityByIdQuery } from 'nr1';
+import { NerdGraphQuery, EntityByGuidQuery } from 'nr1';
 import { findNested } from './utils'
 
 const getScopes = () => {
@@ -12,7 +12,7 @@ const getScopes = () => {
           }` });
         q.then((results) => {
             const accounts = (((results || {}).data || {}).actor || {}).accounts || []
-            const nrqlQuery = "FROM Metric SELECT uniques(rfc190Scope) since 1 day ago"
+            const nrqlQuery = "FROM MetricRaw SELECT uniques(rfc190Scope) since 1 day ago"
             const rfcScopePromises = _buildGraphQuery(accounts.map(acct => acct.id), nrqlQuery)
             Promise.all(rfcScopePromises).then(values => {
                 const rfcScopeValues = []
@@ -62,7 +62,7 @@ const getLogs = (scopes) => {
 
 const getLogById = (guid, messageId) => {
     return new Promise(function(resolve, reject) {
-        EntityByIdQuery.query({entityId:guid}).then(entity => {
+        EntityByGuidQuery.query({entityGuid:guid}).then(entity => {
             const acctId = findNested(entity, 'accountId')
             if(acctId){
                 NerdGraphQuery.query({ query:`{
@@ -153,7 +153,7 @@ const _buildLogsNrqlQuery = (scopes) => {
 const _buildMetricsNrqlQuery = (scopes) => {
     //Careful, reduce return the same value if array.length=1
     const listScopes = scopes.map(scope => `'${scope}'`).reduce((acc,current) => `${current},${acc}`)
-    const nrqlQuery = `FROM Metric SELECT metricName where rfc190Scope in (${listScopes}) since 1 day ago`
+    const nrqlQuery = `FROM MetricRaw SELECT metricName where rfc190Scope in (${listScopes}) since 1 day ago`
     return nrqlQuery
 }
 

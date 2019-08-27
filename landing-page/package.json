@@ -18,7 +18,8 @@
         "react": "^16.6.3",
         "react-dom": "^16.6.3",
         "react-simple-tree-menu": "^1.1.4",
-        "react-table": "^6.10.0"
+        "react-table": "^6.10.0",
+        "semantic-ui-react": "^0.88.0"
     },
     "browserslist": [
         "last 2 versions",

@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import SearchHeader from './components/searchHeader';
 import Logs from'./components/logs';
 import Metrics from'./components/metrics';
+import ServicesAndDT from'./components/servicesAndDT';
 import { getScopes, getLogs, getMetrics } from './helpers/nerdQueries';
-import { Spinner } from 'nr1';
+import { Spinner, Toast } from 'nr1';
 import { formatRfcAtt, filterAttrs } from './helpers/utils';
 
 export default class MyNerdlet extends React.Component {
@@ -35,12 +36,14 @@ export default class MyNerdlet extends React.Component {
 
     onSearchClick() {
         if (this.state.filteredRawData && this.state.filteredRawData.length !== this.state.rawData.length) {
-            this.setState({displayDetails:true})
+            this.setState({displayDetails:true, logs:null, metrics: null})
             getLogs(this.state.filteredRawData).then(logs => this.setState({logs}))
             getMetrics(this.state.filteredRawData).then(metrics => this.setState({metrics}))
         } else {
-            // TODO
-            console.log("popup here: please select something")
+            Toast.showToast('Select', {
+                description: 'Please select your scope!!',
+                type: Toast.TYPE.CRITICAL
+            })
         }
     }
 
@@ -51,6 +54,7 @@ export default class MyNerdlet extends React.Component {
                 <React.Fragment>
                     <Logs data={this.state.logs}/>
                     <Metrics data={this.state.metrics}/>
+                    <ServicesAndDT data={this.state.filteredRawData}/>
                 </React.Fragment>)
             } else {
                 return <Spinner fillContainer type={Spinner.TYPE.INLINE} />
