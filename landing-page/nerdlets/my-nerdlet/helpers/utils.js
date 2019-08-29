@@ -3,7 +3,7 @@ import { RFC_190_SCOPE } from "./constants";
 // For a deep object, this function will return all properties for a giving key
 const findNested = (obj, key) => {
     if (obj.hasOwnProperty(key))
-        return [obj[key]];
+        return obj[key];
 
     var res = [];
     Object.keys(obj).forEach(k => {
@@ -15,7 +15,7 @@ const findNested = (obj, key) => {
     return res;
 }
 
-/** Transform RFC 190 Scope attributes into an object that can be used by searchHeader component
+/** Transform RFC 190 Scope attributes into an object that can be used by searchHeader component.
  *  Example of acceptable format:
  *  {environment: [{environment:"lolriot"},{environment:"lolriotdev"},{environment:"lolriotQa"},{environment:"dev"}],
  *      dcenter: [{dcenter:"pdx2"}, {dcenter:"mia1"}, {dcenter:"euc1"}],
@@ -32,7 +32,8 @@ const formatRfcAtt = (attributesArray) => {
     result[RFC_190_SCOPE.GROUP.ACCESSOR] = []
     result[RFC_190_SCOPE.NAME.ACCESSOR] = []
 
-    attributesArray.map(attribute => {
+    const scopes = getScopesFromObject(attributesArray)
+    scopes.map(attribute => {
         const elements = attribute.split('.')
         if (elements.length == 5) {
             // After splitting the attribute, there is a chance we have duplicates. Let's make sure not to keep them
@@ -85,20 +86,28 @@ const filterAttrs = (rawData, selectedRows, formattedData) => {
     const filters = selectedRows.selected
     const filteredRawData = []
     rawData.forEach(attr => {
-        const elements = attr.split('.')
-        if (!filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].length || filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].includes(elements[0])) {
-            if (!filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].length || filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].includes(elements[1])) {
-                if (!filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].length || filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].includes(elements[2])) {
-                    if (!filters[RFC_190_SCOPE.GROUP.ACCESSOR].length || filters[RFC_190_SCOPE.GROUP.ACCESSOR].includes(elements[3])) {
-                        if (!filters[RFC_190_SCOPE.NAME.ACCESSOR].length || filters[RFC_190_SCOPE.NAME.ACCESSOR].includes(elements[4])) {
-                            filteredRawData.push(attr)
+        const obj = {}
+        obj["accountId"] = attr.accountId
+        obj["scopes"] = []
+        attr.scopes.forEach(scope => {
+            const elements = scope.split('.')
+            if (!filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].length || filters[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR].includes(elements[0])) {
+                if (!filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].length || filters[RFC_190_SCOPE.DATA_CENTER.ACCESSOR].includes(elements[1])) {
+                    if (!filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].length || filters[RFC_190_SCOPE.LOGICAL_CLUSTER.ACCESSOR].includes(elements[2])) {
+                        if (!filters[RFC_190_SCOPE.GROUP.ACCESSOR].length || filters[RFC_190_SCOPE.GROUP.ACCESSOR].includes(elements[3])) {
+                            if (!filters[RFC_190_SCOPE.NAME.ACCESSOR].length || filters[RFC_190_SCOPE.NAME.ACCESSOR].includes(elements[4])) {
+                                obj.scopes.push(scope)
+                            }
                         }
                     }
                 }
-            }
-        } 
+            } 
+        })
+        if (obj["scopes"].length) {
+            filteredRawData.push(obj)
+        }
     })
-    
+    console.log(filteredRawData)
     const filteredDataFormatted = formatRfcAtt(filteredRawData)
     // Do not filter current list and get bigger list in case of deselection
     if (formattedData[selectedRows.lastSelectedTab]>filteredDataFormatted[selectedRows.lastSelectedTab]) {
@@ -106,6 +115,10 @@ const filterAttrs = (rawData, selectedRows, formattedData) => {
     }
 
     return { filteredDataFormatted, filteredRawData }
+}
+
+const getScopesFromObject = (data) => {
+    return data.map(ele => ele.scopes).flat()
 }
 
 const dateFormattingInLogs = (logs) => {
@@ -116,4 +129,4 @@ const dateFormattingInLogs = (logs) => {
 }
 
 
-export { findNested, formatRfcAtt, filterAttrs, dateFormattingInLogs }
+export { findNested, formatRfcAtt, filterAttrs, dateFormattingInLogs, getScopesFromObject }

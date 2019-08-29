@@ -4,9 +4,10 @@ import SearchHeader from './components/searchHeader';
 import Logs from'./components/logs';
 import Metrics from'./components/metrics';
 import ServicesAndDT from'./components/servicesAndDT';
-import { getScopes, getLogs, getMetrics } from './helpers/nerdQueries';
+import { getScopes, getData } from './helpers/nerdQueries';
 import { Spinner, Toast } from 'nr1';
-import { formatRfcAtt, filterAttrs } from './helpers/utils';
+import { formatRfcAtt, filterAttrs, getScopesFromObject } from './helpers/utils';
+import { DATA_TYPE } from './helpers/constants';
 
 export default class MyNerdlet extends React.Component {
 	static propTypes = {
@@ -35,12 +36,12 @@ export default class MyNerdlet extends React.Component {
     }
 
     onSearchClick() {
-        if (this.state.filteredRawData && this.state.filteredRawData.length !== this.state.rawData.length) {
+        if (this.state.filteredRawData && getScopesFromObject(this.state.filteredRawData).length !== getScopesFromObject(this.state.rawData).length) {
             this.setState({displayDetails:true, logs:null, metrics: null})
-            getLogs(this.state.filteredRawData).then(logs => this.setState({logs}))
-            getMetrics(this.state.filteredRawData).then(metrics => this.setState({metrics}))
+            getData(this.state.filteredRawData, DATA_TYPE.LOGS).then(logs => this.setState({logs}))
+            getData(this.state.filteredRawData, DATA_TYPE.METRICS).then(metrics => this.setState({metrics}))
         } else {
-            Toast.showToast('Select', {
+            Toast.showToast('Selection Needed', {
                 description: 'Please select your scope!!',
                 type: Toast.TYPE.CRITICAL
             })
@@ -54,7 +55,7 @@ export default class MyNerdlet extends React.Component {
                 <React.Fragment>
                     <Logs data={this.state.logs}/>
                     <Metrics data={this.state.metrics}/>
-                    <ServicesAndDT data={this.state.filteredRawData}/>
+                    <ServicesAndDT data={getScopesFromObject(this.state.filteredRawData)}/>
                 </React.Fragment>)
             } else {
                 return <Spinner fillContainer type={Spinner.TYPE.INLINE} />

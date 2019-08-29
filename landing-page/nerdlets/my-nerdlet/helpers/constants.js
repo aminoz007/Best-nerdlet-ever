@@ -16,4 +16,10 @@ const LOGS = {
     GUID: {VISIBLE: false}
 }
 
-export { RFC_190_SCOPE, LOGS }
+const DATA_TYPE = {
+    METRICS: "Metrics",
+    LOGS: "Logs",
+    SCOPES: "scopes"
+}
+
+export { RFC_190_SCOPE, LOGS, DATA_TYPE }

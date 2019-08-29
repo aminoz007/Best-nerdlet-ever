@@ -40,7 +40,7 @@ export default class Metrics extends React.Component {
                         <b>Metrics:</b>
                     </StackItem>
                     <StackItem>
-                        <TreeMenu data={arrangeIntoTree(data)} onClickItem={this.actionHandler} hasSearch={false}/>
+                        <TreeMenu data={arrangeIntoTree(data)} onClickItem={this.actionHandler} hasSearch={true}/>
                     </StackItem>
                     </Stack>
     }    
