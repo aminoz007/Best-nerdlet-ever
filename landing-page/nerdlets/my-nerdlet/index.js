@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import SearchHeader from './components/searchHeader';
-import Logs from'./components/logs';
-import Metrics from'./components/metrics';
-import ServicesAndDT from'./components/servicesAndDT';
+import Logs from './components/logs';
+import Metrics from './components/metrics';
+import ServicesAndDT from './components/servicesAndDT';
 import { getScopes, getData } from './helpers/nerdQueries';
 import { Spinner, Toast } from 'nr1';
 import { formatRfcAtt, filterAttrs, getScopesFromObject } from './helpers/utils';
-import { DATA_TYPE } from './helpers/constants';
+import { DATA_TYPE, MAX_SCOPES } from './helpers/constants';
 
 export default class MyNerdlet extends React.Component {
 	static propTypes = {
@@ -26,7 +26,8 @@ export default class MyNerdlet extends React.Component {
             selected: null,
             displayDetails: false,
             logs: null,
-            metrics: null
+            metrics: null,
+            scopes: null,
         }
     }
 
@@ -36,10 +37,19 @@ export default class MyNerdlet extends React.Component {
     }
 
     onSearchClick() {
-        if (this.state.filteredRawData && getScopesFromObject(this.state.filteredRawData).length !== getScopesFromObject(this.state.rawData).length) {
-            this.setState({displayDetails:true, logs:null, metrics: null})
-            getData(this.state.filteredRawData, DATA_TYPE.LOGS).then(logs => this.setState({logs}))
-            getData(this.state.filteredRawData, DATA_TYPE.METRICS).then(metrics => this.setState({metrics}))
+        if (this.state.selected && Object.keys(this.state.selected).filter(key => this.state.selected[key].length).length) {  
+            if(getScopesFromObject(this.state.filteredRawData).length > MAX_SCOPES) {
+                Toast.showToast('Maximum reached', {
+                    description: 'You cannot select more than 100 scope!!',
+                    type: Toast.TYPE.CRITICAL
+                })
+            } else {
+                const { duration } = this.props.launcherUrlState.timeRange
+                this.setState({displayDetails:true, logs:null, metrics: null, scopes: null})
+                getData(this.state.filteredRawData, DATA_TYPE.LOGS, duration).then(logs => this.setState({logs}))
+                getData(this.state.filteredRawData, DATA_TYPE.METRICS, duration).then(metrics => this.setState({metrics}))
+                this.setState({scopes: getScopesFromObject(this.state.filteredRawData)})
+            }
         } else {
             Toast.showToast('Selection Needed', {
                 description: 'Please select your scope!!',
@@ -51,11 +61,12 @@ export default class MyNerdlet extends React.Component {
     getDetails() {
         if(this.state.displayDetails) {
             if(this.state.logs && this.state.metrics) {
+                const { duration } = this.props.launcherUrlState.timeRange
                 return (
                 <React.Fragment>
                     <Logs data={this.state.logs}/>
-                    <Metrics data={this.state.metrics}/>
-                    <ServicesAndDT data={getScopesFromObject(this.state.filteredRawData)}/>
+                    <Metrics data={this.state.metrics} scopes={this.state.scopes} duration={duration}/>
+                    <ServicesAndDT data={this.state.scopes} duration={duration}/>
                 </React.Fragment>)
             } else {
                 return <Spinner fillContainer type={Spinner.TYPE.INLINE} />
@@ -63,12 +74,26 @@ export default class MyNerdlet extends React.Component {
         }
     }
 
+    // Called only at the initial render
     componentDidMount(){
-        getScopes().then(data => {
+        const { duration } = this.props.launcherUrlState.timeRange
+        getScopes(duration).then(data => {
             const formattedData = formatRfcAtt(data)
             this.setState({formattedData:formattedData, rawData:data})
         })
     }
+
+    // Not called at the initial render but called later when the component has been updated
+    // Should be wrapped in "if" or it will cause infinite loop
+    componentDidUpdate(prevProps) {
+        if (this.props.launcherUrlState.timeRange !== prevProps.launcherUrlState.timeRange) {
+            const { duration } = this.props.launcherUrlState.timeRange  
+            getScopes(duration).then(data => {
+                const formattedData = formatRfcAtt(data)
+                this.setState({formattedData:formattedData, rawData:data}, () => this.onSearchClick())
+            })
+        }
+      }
 
     render() {
         const { formattedData } = this.state

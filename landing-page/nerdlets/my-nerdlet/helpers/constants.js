@@ -22,4 +22,6 @@ const DATA_TYPE = {
     SCOPES: "scopes"
 }
 
-export { RFC_190_SCOPE, LOGS, DATA_TYPE }
+const MAX_SCOPES = 100
+
+export { RFC_190_SCOPE, LOGS, DATA_TYPE, MAX_SCOPES }

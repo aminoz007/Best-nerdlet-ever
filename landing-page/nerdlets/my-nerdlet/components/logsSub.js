@@ -36,12 +36,12 @@ export default class LogsSub extends React.Component {
     }
 
     getMultiDoc() {
-      const startTime = this.state.expandedRow[0].timestamp - (60 * 1000) // -1 minute
-      const endTime = this.state.expandedRow[0].timestamp + (60 * 1000)   // +1 minute
+      //const startTime = this.state.expandedRow[0].timestamp - (60 * 1000) // -1 minute
+      //const endTime = this.state.expandedRow[0].timestamp + (60 * 1000)   // +1 minute
+      //"timeRange":{"begin_time": startTime,"end_time":endTime,"duration":null}
       const nerdletWithState = {
           id: 'logger.log-tailer',
-          urlState: {"query":`service_name:"${this.state.expandedRow[0].service_name  }"`, accountId:this.state.accountId, 
-          "timeRange":{"begin_time": startTime,"end_time":endTime,"duration":null}}
+          urlState: {"query":`service_name:"${this.state.expandedRow[0].service_name  }"`, accountId:this.state.accountId}
       }
       return navigation.openStackedNerdlet(nerdletWithState)
     }
@@ -62,7 +62,7 @@ export default class LogsSub extends React.Component {
           onClick={this.getMultiDoc}
           type={Button.TYPE.PLAIN}
           sizeType ={Button.SIZE_TYPE.SLIM}>
-          View surrounding documents
+          View all service documents
           </Button>
         </GridItem>
         <GridItem columnSpan={9}>

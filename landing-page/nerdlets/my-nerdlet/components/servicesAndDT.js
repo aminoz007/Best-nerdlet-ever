@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'react-table/react-table.css';
-import {Stack, StackItem, EntitySearchQuery, Button, Grid, GridItem, navigation, Spinner, ChartGroup, AreaChart, LineChart, TableChart, PieChart} from 'nr1';
+import {Stack, StackItem, Button, Grid, GridItem, navigation, Spinner, ChartGroup, AreaChart, LineChart, TableChart, PieChart} from 'nr1';
 import { Accordion } from 'semantic-ui-react';
+import { getEntitiesByScope } from '../helpers/nerdQueries'
 
 export default class ServicesAndDT extends React.Component {
     static propTypes = {
@@ -13,100 +14,88 @@ export default class ServicesAndDT extends React.Component {
     constructor(Props) {
         super(Props)
         this.state = {
-            scopesStatus: {}
+            currentDisplayedEntities: [],
+            isLoading: true,
+            selectedEntityIndex: -1,
         }
-        this.getEntities = this.getEntities.bind(this)
+        this.onScopeClick = this.onScopeClick.bind(this)
+        this.onEntityClick = this.onEntityClick.bind(this)
       }
 
     renderList() {
         const { data } = this.props
         const rootPanels = data.map(scope => {
-            return { key: scope, title: `Rfc190Scope: ${scope}`, content: { content: this.getEntitiesList(scope) } }
+            if (this.state.isLoading) {
+                return { key: scope, title: `Rfc190Scope: ${scope}`, content: { content: <Spinner /> } }
+            } else if (this.state.currentDisplayedEntities.length){
+                return { key: scope, title: `Rfc190Scope: ${scope}`, content: { content: <Accordion.Accordion panels={this.getEntitiesDetails()} onTitleClick={this.onEntityClick}/> } }
+            } else {
+                return { key: scope, title: `Rfc190Scope: ${scope}`, content: "No services found for this scope"}
+            } 
         })
-        return <Accordion panels={rootPanels} onTitleClick={this.getEntities} styled />
+        return <Accordion panels={rootPanels} onTitleClick={this.onScopeClick} styled />
     }
 
-    getEntities(e, data) {
+    onScopeClick(e, data) {
+        this.setState({isLoading:true})
         const currentScope = this.props.data[data.index]
-        this.setState(prevState => ({
-            scopesStatus: {                   
-                ...prevState.scopesStatus,    
-                [currentScope]: data.active      
-            }
-        }))
+        if (!data.active) {
+            getEntitiesByScope(currentScope).then(data => this.setState({currentDisplayedEntities:data, isLoading:false}))
+        }
+        console.log(currentScope)
     }
 
-    setEntity(e, data) {}
-
-    getEntitiesList(scope) {
-        const FILTERS = [
-            {
-                type: 'entityType',
-                value: {domain: 'APM', type: 'APPLICATION'}
-            },
-            {
-                type: EntitySearchQuery.FILTER_TYPE.TAG,
-                value: {key: 'rfc190Scope', value: scope}
-            }
-        ]
-        return  (
-                    <div>
-                        {!this.state.scopesStatus[scope] && 
-                        <EntitySearchQuery filters={FILTERS}>
-                            {({loading, error, data}) => {
-                                if (loading) {
-                                    return <Spinner />
-                                }
-                                const listEntities = ((((data || {}).actor || {}).entitySearch || {}).results || {}).entities || []
-                                if (!listEntities.length) {
-                                    return <div>No services found for this scope</div>
-                                }
-                                return (
-                                    <Accordion.Accordion panels={this.getEntitiesDetails(listEntities)}/>
-                                )
-                            }}
-                        </EntitySearchQuery>}
-                    </div>
-                )
+    onEntityClick(e, data) {
+        if (!data.active) {
+            this.setState({selectedEntityIndex:data.index})
+        } else {
+            this.setState({selectedEntityIndex:-1})
+        }
     }
 
-    getEntitiesDetails(entities) {
-        return entities.map((entity,i) => {
-            const content = <div> Application Details: 
-                                <Grid>
-                                    <GridItem columnStart={9} columnEnd={10}>
-                                        <Button
-                                        onClick={() => this.onServiceClick(entity['guid'])}
-                                        type={Button.TYPE.PLAIN}
-                                        sizeType ={Button.SIZE_TYPE.SLIM}
-                                        iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__MONITORING}>
-                                        Open Service Overview
-                                        </Button>
-                                    </GridItem>
-                                    <GridItem columnStart={11} columnEnd={12}>
-                                        <Button
-                                        onClick={() => this.onDTClick(entity['name'])}
-                                        type={Button.TYPE.PLAIN}
-                                        sizeType ={Button.SIZE_TYPE.SLIM}
-                                        iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__TRAFFIC}>
-                                        Open Distributed Tracing
-                                        </Button>
-                                    </GridItem>
-                                    <GridItem columnSpan={12}>
-                                        {this.renderCharts(entity['accountId'],entity['name'])}
-                                    </GridItem>
-                                </Grid>
-                            </div>
-            return {key: i, title: `Service name: ${entity['name']} / Account ID: ${entity['accountId']}`, content: {content: content} }
-         })
+    getEntitiesDetails() {
+        return this.state.currentDisplayedEntities.map((entity,i) => {
+            if (this.state.selectedEntityIndex === i) {
+                const content = <div> Application Details: 
+                                    <Grid>
+                                        <GridItem columnStart={9} columnEnd={10}>
+                                            <Button
+                                            onClick={() => this.onServiceClick(entity['guid'])}
+                                            type={Button.TYPE.PLAIN}
+                                            sizeType ={Button.SIZE_TYPE.SLIM}
+                                            iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__MONITORING}>
+                                            Open Service Overview
+                                            </Button>
+                                        </GridItem>
+                                        <GridItem columnStart={11} columnEnd={12}>
+                                            <Button
+                                            onClick={() => this.onDTClick(entity['name'])}
+                                            type={Button.TYPE.PLAIN}
+                                            sizeType ={Button.SIZE_TYPE.SLIM}
+                                            iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__TRAFFIC}>
+                                            Open Distributed Tracing
+                                            </Button>
+                                        </GridItem>
+                                        <GridItem columnSpan={12}>
+                                            {this.renderCharts(entity['accountId'],entity['name'])}
+                                        </GridItem>
+                                    </Grid>
+                                </div>
+                return {key: i, title: `Service name: ${entity['name']} / Account ID: ${entity['accountId']}`, content: {content: content} }
+            } else {
+                return {key: i, title: `Service name: ${entity['name']} / Account ID: ${entity['accountId']}`}
+            }
+        })
+
     }
 
     renderCharts(accountId, serviceName) {
-        const responseTimeQ = `FROM Transaction SELECT average(duration) where appName = '${serviceName}' Timeseries`
-        const throughtputHostQ = `FROM Transaction SELECT count(*) where appName = '${serviceName}' facet host TIMESERIES`
-        const errorsCodeQ = `FROM TransactionError SELECT count(*) where appName = '${serviceName}' facet httpResponseCode Timeseries`
-        const errorsMsgsQ = `SELECT count(*) FROM TransactionError where appName = '${serviceName}' facet error.message`
-        const breakDownTranQ = `SELECT count(*), average(duration), average(databaseDuration), average(externalDuration) FROM Transaction where appName = '${serviceName}' FACET name`
+        const since = ` SINCE ${this.props.duration/1000/60} MINUTES AGO `
+        const responseTimeQ = `FROM Transaction SELECT average(duration) where appName = '${serviceName}' TIMESERIES ${since}`
+        const throughtputHostQ = `FROM Transaction SELECT count(*) where appName = '${serviceName}' facet host TIMESERIES ${since}`
+        const errorsCodeQ = `FROM TransactionError SELECT count(*) where appName = '${serviceName}' facet httpResponseCode TIMESERIES ${since}`
+        const errorsMsgsQ = `SELECT count(*) FROM TransactionError where appName = '${serviceName}' facet error.message ${since}`
+        const breakDownTranQ = `SELECT count(*), average(duration), average(databaseDuration), average(externalDuration) FROM Transaction where appName = '${serviceName}' FACET name ${since}`
         return (
         <ChartGroup>
             <Grid>
@@ -176,7 +165,6 @@ export default class ServicesAndDT extends React.Component {
     }
     
     render() {
-
         return  <Stack
                     alignmentType={Stack.ALIGNMENT_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.VERTICAL} 

@@ -128,5 +128,18 @@ const dateFormattingInLogs = (logs) => {
     }) 
 }
 
+// Return the account or accounts id where a giving metric belongs
+// DataSet is the result of nerQueries.getData(data, DATA_TYPE.METRICS). It has this format: 
+// [{accountId: X, members[metric1, metric 2, ...]}, {accountId: Y, members[metric3, metric 4, ...]}, etc]
+const getAccounts = (metric, dataSet) => {
+    const accounts = []
+    dataSet.forEach(accountData => {
+        if (accountData.members.includes(metric)) {
+            accounts.push(accountData.accountId)
+        }
+    })
+    return accounts
+}
 
-export { findNested, formatRfcAtt, filterAttrs, dateFormattingInLogs, getScopesFromObject }
+
+export { findNested, formatRfcAtt, filterAttrs, dateFormattingInLogs, getScopesFromObject, getAccounts }

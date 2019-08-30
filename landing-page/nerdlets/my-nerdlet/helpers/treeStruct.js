@@ -11,7 +11,8 @@
 
 const arrangeIntoTree = (data) => {
 
-    const metrics = data.map(element => element["member"].split('.'))   
+    const names = data.map(element => element["members"]).flat()
+    const metrics = names.map(element => element.split('.'))   
     const tree = []
 
     for (let i = 0; i < metrics.length; i++) {

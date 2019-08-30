@@ -1,8 +1,8 @@
-import { NerdGraphQuery, EntityByGuidQuery } from 'nr1';
-import { findNested, getScopesFromObject } from './utils';
+import { NerdGraphQuery, EntityByGuidQuery, EntitySearchQuery } from 'nr1';
+import { findNested } from './utils';
 import { DATA_TYPE } from './constants';
 
-const getScopes = () => {
+const getScopes = (duration) => {
     return new Promise(function(resolve, reject) {
         const q = NerdGraphQuery.query({ query: `{
             actor {
@@ -13,7 +13,7 @@ const getScopes = () => {
           }` });
         q.then((results) => {
             const accounts = (((results || {}).data || {}).actor || {}).accounts || []
-            const rfcScopePromises = _buildGraphQuery(accounts.map(acct => acct.id), DATA_TYPE.SCOPES)
+            const rfcScopePromises = _buildGraphQuery(accounts.map(acct => acct.id), DATA_TYPE.SCOPES, duration)
             Promise.all(rfcScopePromises).then(values => {
                 const rfcScopeValues = []
                 values.forEach(value => {
@@ -32,9 +32,9 @@ const getScopes = () => {
 }
 
 // Used to Fetch logs or metrics. dataType="Metrics" or "Logs" depending on what to fetch
-const getData = (scopesByAcct, dataType) => {
+const getData = (scopesByAcct, dataType, duration) => {
     return new Promise(function(resolve, reject) {
-        const dataPromises = _buildGraphQuery(scopesByAcct, dataType)
+        const dataPromises = _buildGraphQuery(scopesByAcct, dataType, duration)
         Promise.all(dataPromises).then(values => {
             const data = []
             values.forEach(value => {
@@ -72,16 +72,38 @@ const getLogById = (guid, messageId) => {
     })
 }
 
-const _buildGraphQuery = (data, dataType) => {
+const getEntitiesByScope = (scope) => {
+    const filters = [
+        {
+            type: 'entityType',
+            value: {domain: 'APM', type: 'APPLICATION'}
+        },
+        {
+            type: EntitySearchQuery.FILTER_TYPE.TAG,
+            value: {key: 'rfc190Scope', value: scope}
+        }
+    ]
+    return new Promise(function(resolve, reject) {
+        EntitySearchQuery.query({filters:filters}).then(data => {
+            resolve(findNested(data, 'entities'))
+        })
+        .catch((error) => {
+            reject(error)
+        })   
+    })
+}
+
+const _buildGraphQuery = (data, dataType, duration) => {
 
     let graphQueryList = ""
+    const since = ` SINCE ${duration/1000/60} MINUTES AGO `
 
     if (dataType === DATA_TYPE.LOGS) {
-        graphQueryList = _buildLogsQuery(data)
+        graphQueryList = _buildLogsQuery(data, since)
     } else if (dataType === DATA_TYPE.METRICS) {
-        graphQueryList = _buildMetricsQuery(data)
+        graphQueryList = _buildMetricsQuery(data, since)
     } else if (dataType === DATA_TYPE.SCOPES) {
-        graphQueryList = _buildScopesQuery(data)
+        graphQueryList = _buildScopesQuery(data, since)
     }
 
     // GraphQL Queries has a complexity limit. To avoid reaching this limit we will split
@@ -103,11 +125,11 @@ const _buildGraphQuery = (data, dataType) => {
     return promises
 }
 
-const _buildLogsQuery = (data) => {
+const _buildLogsQuery = (data, since) => {
     return data.map((row,index) => {
         //Careful, reduce return the same value if array.length=1
         const listScopes = row.scopes.map(scope => `'${scope}'`).reduce((acc,current) => `${current},${acc}`)
-        const nrqlQuery = `FROM Log  SELECT timestamp, hostname, service_name, severity, message, messageId as message_id, nr.entity.guid as guid where service_name in (${listScopes}) since 1 day ago`
+        const nrqlQuery = `FROM Log  SELECT timestamp, hostname, service_name, severity, message, messageId as message_id, nr.entity.guid as guid where service_name in (${listScopes}) ${since} LIMIT 100`
         return `account${index}:account(id: ${row.accountId}) {
             nrql(query: "${nrqlQuery}") {
             results
@@ -116,11 +138,11 @@ const _buildLogsQuery = (data) => {
     })
 }
 
-const _buildMetricsQuery = (data) => {
+const _buildMetricsQuery = (data, since) => {
     return data.map((row,index) => {
         //Careful, reduce return the same value if array.length=1
         const listScopes = row.scopes.map(scope => `'${scope}'`).reduce((acc,current) => `${current},${acc}`)
-        const nrqlQuery = `FROM MetricRaw SELECT uniques(metricName) where rfc190Scope in (${listScopes}) since 1 day ago`
+        const nrqlQuery = `FROM MetricRaw SELECT uniques(metricName),${row.accountId} as accountId where rfc190Scope in (${listScopes}) ${since}`
         return `account${index}:account(id: ${row.accountId}) {
             nrql(query: "${nrqlQuery}") {
             results
@@ -129,13 +151,13 @@ const _buildMetricsQuery = (data) => {
     })
 }
 
-const _buildScopesQuery = (data) => {
+const _buildScopesQuery = (data, since) => {
     return data.map((account,index) => 
     `account${index}:account(id: ${account}) {
-        nrql(query: "FROM MetricRaw SELECT uniques(rfc190Scope), ${account} as accountId since 1 day ago") {
+        nrql(query: "FROM MetricRaw SELECT uniques(rfc190Scope), ${account} as accountId ${since}") {
         results
         }
     }`)
 }
 
-export { getScopes, getData, getLogById }
+export { getScopes, getData, getLogById, getEntitiesByScope }
