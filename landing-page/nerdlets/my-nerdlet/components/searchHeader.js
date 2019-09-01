@@ -4,6 +4,7 @@ import ReactTable from "react-table";
 import 'react-table/react-table.css';
 import {Stack, StackItem, Button} from 'nr1';
 import { RFC_190_SCOPE } from '../helpers/constants';
+import Favorites from './favorites';
 
 export default class SearchHeader extends React.Component {
     static propTypes = {
@@ -17,6 +18,7 @@ export default class SearchHeader extends React.Component {
           selected: {environment:[], dcenter:[], lcluster:[], group:[], name:[]},
           lastSelectedTab: null 
         }
+        this.onFavSelected = this.onFavSelected.bind(this)
       }
     
     tableElem (data, header, accessor) {
@@ -40,7 +42,7 @@ export default class SearchHeader extends React.Component {
                 style={{
                     height: "300px", // This will force the table body to overflow and scroll, since there is not enough room
                     width: "300px",
-                    marginTop: "20px"
+                    marginTop: "40px"
                   }}
                 
                 // Select/Deslect rows
@@ -74,10 +76,18 @@ export default class SearchHeader extends React.Component {
           ); 
     }
 
+    onFavSelected(selection) {
+      this.setState({
+        selected: selection.selected,
+        lastSelectedTab: selection.lastSelectedTab
+      }, () => this.props.onSelectRows(this.state))
+    }
+
     render() {
       const { data, onSearchClick } = this.props;
 
       return  <React.Fragment>
+                <Favorites data={this.state} favSelected={this.onFavSelected} />
                 <Stack
                     alignmentType={Stack.ALIGNMENT_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.HORIZONTAL}

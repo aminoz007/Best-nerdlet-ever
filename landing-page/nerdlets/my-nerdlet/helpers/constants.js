@@ -24,4 +24,9 @@ const DATA_TYPE = {
 
 const MAX_SCOPES = 100
 
-export { RFC_190_SCOPE, LOGS, DATA_TYPE, MAX_SCOPES }
+const STORAGE = {
+    COLLECTION: 'landing-page-selection-c0',
+    DOCUMENT_ID: 'landing-page-selection'
+}
+
+export { RFC_190_SCOPE, LOGS, DATA_TYPE, MAX_SCOPES, STORAGE }

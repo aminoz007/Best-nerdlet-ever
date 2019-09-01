@@ -74,7 +74,6 @@ export default class LogsSub extends React.Component {
     }
 
     render() {
-      const location = "google.com"
       return (
         <div>
           {this.state.expandedRow ? 

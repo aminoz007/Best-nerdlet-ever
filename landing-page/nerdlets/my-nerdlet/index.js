@@ -23,7 +23,7 @@ export default class MyNerdlet extends React.Component {
             formattedData: null,
             rawData: null,
             filteredRawData: null,
-            selected: null,
+            selection: null,
             displayDetails: false,
             logs: null,
             metrics: null,
@@ -33,11 +33,11 @@ export default class MyNerdlet extends React.Component {
 
     onSelect(selectedData) {
         const { filteredDataFormatted, filteredRawData } = filterAttrs(this.state.rawData, selectedData, this.state.formattedData)
-        this.setState({formattedData:filteredDataFormatted, selected:selectedData.selected, filteredRawData})
+        this.setState({formattedData:filteredDataFormatted, selection:selectedData, filteredRawData})
     }
 
     onSearchClick() {
-        if (this.state.selected && Object.keys(this.state.selected).filter(key => this.state.selected[key].length).length) {  
+        if (this.state.selection && Object.keys(this.state.selection.selected).filter(key => this.state.selection.selected[key].length).length) {  
             if(getScopesFromObject(this.state.filteredRawData).length > MAX_SCOPES) {
                 Toast.showToast('Maximum reached', {
                     description: 'You cannot select more than 100 scope!!',
@@ -90,7 +90,17 @@ export default class MyNerdlet extends React.Component {
             const { duration } = this.props.launcherUrlState.timeRange  
             getScopes(duration).then(data => {
                 const formattedData = formatRfcAtt(data)
-                this.setState({formattedData:formattedData, rawData:data}, () => this.onSearchClick())
+                if (this.state.selection) {
+                    const { filteredDataFormatted, filteredRawData } = filterAttrs(data, this.state.selection, formattedData)
+                    this.setState({formattedData:filteredDataFormatted, filteredRawData})
+                } else {
+                    this.setState({formattedData:formattedData, rawData:data})
+                }
+                if (this.state.filteredRawData) { //TODO: check filteredRawData = rawdata
+                    getData(this.state.filteredRawData, DATA_TYPE.LOGS, duration).then(logs => this.setState({logs}))
+                    getData(this.state.filteredRawData, DATA_TYPE.METRICS, duration).then(metrics => this.setState({metrics}))
+                }
+
             })
         }
       }

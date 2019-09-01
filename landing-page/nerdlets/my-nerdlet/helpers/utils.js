@@ -84,6 +84,8 @@ const formatRfcAtt = (attributesArray) => {
 // Make sure not to filter the current table where the selection is made 
 const filterAttrs = (rawData, selectedRows, formattedData) => {
     const filters = selectedRows.selected
+    console.log(filters)
+    console.log(selectedRows)
     const filteredRawData = []
     rawData.forEach(attr => {
         const obj = {}

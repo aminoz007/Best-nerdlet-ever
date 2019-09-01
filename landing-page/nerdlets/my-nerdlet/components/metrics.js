@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Stack, StackItem, LineChart, Dropdown, DropdownItem, navigation} from 'nr1';
+import {Stack, StackItem, LineChart, Dropdown, DropdownItem, navigation, ChartGroup} from 'nr1';
 import { arrangeIntoTree } from '../helpers/treeStruct';
 import { getAccounts } from '../helpers/utils';
 import TreeMenu from 'react-simple-tree-menu';
@@ -53,34 +53,36 @@ export default class Metrics extends React.Component {
         const countQuery = `FROM MetricRaw SELECT count(\`${metric}\`) where rfc190Scope in (${listScopes}) TIMESERIES ${since}`
         const sumQuery = `FROM MetricRaw SELECT sum(\`${metric}\`) where rfc190Scope in (${listScopes}) TIMESERIES ${since}`
         console.log(countQuery)
-        return  <Stack
-                alignmentType={Stack.ALIGNMENT_TYPE.FILL}
-                directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
-                gapType={Stack.GAP_TYPE.NONE}
-                className="metrics">
-                    <StackItem>
-                        <Dropdown title="Accounts:">
-                            {this.state.accounts.map((account,i) => <DropdownItem key={i} onClick={() => this.onAccountChange(account)}>{account.toString()}</DropdownItem>)}
-                        </Dropdown>
-                    </StackItem>
-                    <StackItem style={{height:"250px"}}>
-                        <LineChart
-                            accountId={accountId}
-                            query={countQuery}
-                            style={{marginTop: "20px"}}
-                            onClickLine={()=>this.openInsights(countQuery)}
-                        />
-                    </StackItem>
-                    <StackItem style={{height:"250px"}}>
-                        <LineChart
-                            accountId={accountId}
-                            query={sumQuery}
-                            style={{marginTop: "20px"}}
-                            onClickLine={()=>this.openInsights(sumQuery)}
-                        />
-                    </StackItem>
-                </Stack>
+        return  <ChartGroup>
+                    <Stack
+                    alignmentType={Stack.ALIGNMENT_TYPE.FILL}
+                    directionType={Stack.DIRECTION_TYPE.VERTICAL} 
+                    distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                    gapType={Stack.GAP_TYPE.NONE}
+                    className="metrics">
+                        <StackItem>
+                            <Dropdown title="Accounts:">
+                                {this.state.accounts.map((account,i) => <DropdownItem key={i} onClick={() => this.onAccountChange(account)}>{account.toString()}</DropdownItem>)}
+                            </Dropdown>
+                        </StackItem>
+                        <StackItem style={{height:"250px"}}>
+                            <LineChart
+                                accountId={accountId}
+                                query={countQuery}
+                                style={{marginTop: "20px"}}
+                                onClickLine={()=>this.openInsights(countQuery)}
+                            />
+                        </StackItem>
+                        <StackItem style={{height:"250px"}}>
+                            <LineChart
+                                accountId={accountId}
+                                query={sumQuery}
+                                style={{marginTop: "20px"}}
+                                onClickLine={()=>this.openInsights(sumQuery)}
+                            />
+                        </StackItem>
+                    </Stack>
+                </ChartGroup>
     }
 
     openInsights(query) {
