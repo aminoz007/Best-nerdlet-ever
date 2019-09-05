@@ -1,29 +1,29 @@
 {
-    "private": true,
-    "name": "landing-page",
-    "description": "NR1 UI Package landing-page",
-    "version": "0.1.0",
-    "scripts": {
-        "start": "nr1 package:serve",
-        "test": "exit 0"
-    },
-    "nr1": {
-        "uuid": "86549f01-8994-4980-a215-5de6653fef8b",
-        "sdkVersion": 2
-    },
-    "dependencies": {
-        "graphql": "^14.4.2",
-        "graphql-tag": "^2.10.1",
-        "prop-types": "^15.6.2",
-        "react": "^16.6.3",
-        "react-dom": "^16.6.3",
-        "react-simple-tree-menu": "^1.1.4",
-        "react-table": "^6.10.0",
-        "semantic-ui-react": "^0.88.0"
-    },
-    "browserslist": [
-        "last 2 versions",
-        "not ie < 11",
-        "not dead"
-    ]
+  "private": true,
+  "name": "landing-page",
+  "description": "NR1 UI Package landing-page",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "nr1 package:serve",
+    "test": "exit 0"
+  },
+  "nr1": {
+    "uuid": "a14f1da3-35e2-4fa5-9f3e-3f55094998c0",
+    "sdkVersion": 2
+  },
+  "dependencies": {
+    "graphql": "^14.4.2",
+    "graphql-tag": "^2.10.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-simple-tree-menu": "^1.1.4",
+    "react-table": "^6.10.0",
+    "semantic-ui-react": "^0.88.0"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not ie < 11",
+    "not dead"
+  ]
 }
