@@ -53,7 +53,7 @@ export default class LogsSub extends React.Component {
           <Button
           onClick={this.getSingleDoc}
           type={Button.TYPE.PLAIN}
-          sizeType ={Button.SIZE_TYPE.SLIM}>
+          sizeType ={Button.SIZE_TYPE.SMALL}>
           View single document
           </Button>
         </GridItem>
@@ -61,7 +61,7 @@ export default class LogsSub extends React.Component {
           <Button
           onClick={this.getMultiDoc}
           type={Button.TYPE.PLAIN}
-          sizeType ={Button.SIZE_TYPE.SLIM}>
+          sizeType ={Button.SIZE_TYPE.SMALL}>
           View all service documents
           </Button>
         </GridItem>

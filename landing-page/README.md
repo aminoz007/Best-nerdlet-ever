@@ -5,18 +5,13 @@
 Run the following scripts:
 
 ```
+git clone https://github.com/aminoz007/Best-nerdlet-ever.git
+cd landing-page
+nr1 nerdpack:uuid -gf
+Update the prefix of "rootNerdletId" with the generated UUID above in nr1.json: https://github.com/aminoz007/Best-nerdlet-ever/blob/master/landing-page/launchers/my-launcher/nr1.json
 npm install
 npm start
 ```
 
-Visit https://one.newrelic.com/?packages=local and :sparkles:
+Visit https://one.newrelic.com/?nerdpacks=local, navigate to the Nerdpack, and :sparkles:
 
-## Creating new artifacts
-
-If you want to create new artifacts run the following command:
-
-```
-nr1 create
-```
-
-> Example: `nr1 create --type nerdlet --name my-nerdlet`.

@@ -62,7 +62,7 @@ export default class ServicesAndDT extends React.Component {
                                             <Button
                                             onClick={() => this.onServiceClick(entity['guid'])}
                                             type={Button.TYPE.PLAIN}
-                                            sizeType ={Button.SIZE_TYPE.SLIM}
+                                            sizeType ={Button.SIZE_TYPE.SMALL}
                                             iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__MONITORING}>
                                             Open Service Overview
                                             </Button>
@@ -71,7 +71,7 @@ export default class ServicesAndDT extends React.Component {
                                             <Button
                                             onClick={() => this.onDTClick(entity['name'])}
                                             type={Button.TYPE.PLAIN}
-                                            sizeType ={Button.SIZE_TYPE.SLIM}
+                                            sizeType ={Button.SIZE_TYPE.SMALL}
                                             iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__TRAFFIC}>
                                             Open Distributed Tracing
                                             </Button>
