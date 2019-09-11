@@ -4,5 +4,5 @@
     "description": "Start exploring your data!!",
     "displayName": "Riot's Landing Page",
     "icon": "location_location_home",
-    "rootNerdletId": "a14f1da3-35e2-4fa5-9f3e-3f55094998c0.my-nerdlet"
+    "rootNerdletId": "landing-page.my-nerdlet"
 }
