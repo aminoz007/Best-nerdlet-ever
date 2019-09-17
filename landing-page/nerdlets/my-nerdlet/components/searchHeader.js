@@ -89,10 +89,11 @@ export default class SearchHeader extends React.Component {
       return  <React.Fragment>
                 <Favorites data={this.state} favSelected={this.onFavSelected} />
                 <Stack
-                    alignmentType={Stack.ALIGNMENT_TYPE.FILL}
-                    directionType={Stack.DIRECTION_TYPE.HORIZONTAL}
-                    distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
-                    gapType={Stack.GAP_TYPE.EXTRA_LOOSE}>
+                    horizontalType={Stack.HORIZONTAL_TYPE.FILL}
+                    //directionType={Stack.DIRECTION_TYPE.HORIZONTAL}
+                    //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                    gapType={Stack.GAP_TYPE.EXTRA_LARGE}
+                    >
                   <StackItem>
                     {this.tableElem(data[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR], RFC_190_SCOPE.ENVIRONMENT.HEADER, RFC_190_SCOPE.ENVIRONMENT.ACCESSOR)}
                   </StackItem>

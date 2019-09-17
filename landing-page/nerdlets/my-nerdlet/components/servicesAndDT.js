@@ -60,7 +60,7 @@ export default class ServicesAndDT extends React.Component {
                                     <Grid>
                                         <GridItem columnStart={9} columnEnd={10}>
                                             <Button
-                                            onClick={() => this.onServiceClick(entity['guid'])}
+                                            onClick={() => navigation.openStackedEntity(entity['guid'])}
                                             type={Button.TYPE.PLAIN}
                                             sizeType ={Button.SIZE_TYPE.SMALL}
                                             iconType={Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__MONITORING}>
@@ -143,17 +143,6 @@ export default class ServicesAndDT extends React.Component {
         </ChartGroup>)
     }
 
-    onServiceClick(guid) {
-        // Opens stacked entity.
-        const entity = {
-            guid: guid,
-            domain: 'APM',
-            type: 'APPLICATION',
-        }
-        navigation.openStackedEntity(entity)
-
-    }
-
     onDTClick(serviceName) {
         const state = {"query":{"operator":"AND","indexQuery":{"conditionType":"INDEX","operator":"AND","conditions":[]},"spanQuery":{"operator":"AND","conditionSets":[{"conditionType":"SPAN","operator":"AND","conditions":[{"attr":"appName","operator":"EQ","value":serviceName}]}]}}}     
         const nerdletWithState = {
@@ -166,9 +155,9 @@ export default class ServicesAndDT extends React.Component {
     
     render() {
         return  <Stack
-                    alignmentType={Stack.ALIGNMENT_TYPE.FILL}
+                    verticalType={Stack.VERTICAL_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                    distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                    //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
                     gapType={Stack.GAP_TYPE.NONE}
                     className="logs">
                     <StackItem className="title">

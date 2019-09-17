@@ -78,7 +78,7 @@ export default class LogsSub extends React.Component {
         <div>
           {this.state.expandedRow ? 
            this.getDetails(): 
-          <Spinner fillContainer type={Spinner.TYPE.INLINE} />}
+          <Spinner type={Spinner.TYPE.DOT} />}
         </div>
       )
     }    

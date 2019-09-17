@@ -55,9 +55,9 @@ export default class Metrics extends React.Component {
         console.log(countQuery)
         return  <ChartGroup>
                     <Stack
-                    alignmentType={Stack.ALIGNMENT_TYPE.FILL}
+                    verticalType={Stack.VERTICAL_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                    distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                    //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
                     gapType={Stack.GAP_TYPE.NONE}
                     className="metrics">
                         <StackItem>
@@ -89,7 +89,7 @@ export default class Metrics extends React.Component {
         console.log(query)
         const nerdletWithState = {
             id: 'wanda-data-exploration.data-explorer',
-            urlState: {initialNrqlValue:query, initialAccountId: this.state.currentAccount}
+            urlState: {initialNrqlValue:query, initialAccountId: this.state.currentAccount, initialActiveInterface:"nrqlEditor"}
        }
        
        navigation.openStackedNerdlet(nerdletWithState)
@@ -102,15 +102,15 @@ export default class Metrics extends React.Component {
             <>
                 <ModalMsg data={data}/>
                 <Stack
-                alignmentType={Stack.ALIGNMENT_TYPE.FILL}
+                horizontalType={Stack.HORIZONTAL_TYPE.FILL}
                 directionType={Stack.DIRECTION_TYPE.HORIZONTAL} 
-                distributionType={Stack.DISTRIBUTION_TYPE.FILL}
+                //distributionType={Stack.DISTRIBUTION_TYPE.FILL}
                 gapType={Stack.GAP_TYPE.NONE}>
                     <StackItem>
                         <Stack
-                        alignmentType={Stack.ALIGNMENT_TYPE.FILL}
+                        verticalType={Stack.VERTICAL_TYPE.FILL}
                         directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                        distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                        //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
                         gapType={Stack.GAP_TYPE.NONE}
                         className="metrics">
                             <StackItem className="title">

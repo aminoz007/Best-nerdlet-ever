@@ -50,6 +50,8 @@ const getData = (scopesByAcct, dataType, duration) => {
 const getLogById = (guid, messageId) => {
     return new Promise(function(resolve, reject) {
         EntityByGuidQuery.query({entityGuid:guid}).then(entity => {
+            console.log(entity)
+            console.log(guid)
             const result = findNested(entity, 'entities')
             const acctId = result[0].accountId
             if(acctId){

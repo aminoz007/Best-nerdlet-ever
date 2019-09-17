@@ -72,9 +72,9 @@ export default class Logs extends React.Component {
       console.log(data)
 
       return  <Stack
-                    alignmentType={Stack.ALIGNMENT_TYPE.FILL}
+                    verticalType={Stack.VERTICAL_TYPE.FILL}
                     directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                    distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                    fullWidth={true}
                     gapType={Stack.GAP_TYPE.NONE}
                     className="logs">
                   <StackItem className="title">

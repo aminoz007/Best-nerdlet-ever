@@ -35,14 +35,16 @@ export default class ModalMsg extends React.Component {
         return (
             <>
                 <Modal hidden={this.state.hidden} onClose={this._onClose}>
-                  <HeadingText type='heading1'>Oops looks like we hit some limits!</HeadingText>
-                  <BlockText type={BlockText.TYPE.PARAGRAPH}>
+                  <HeadingText type={HeadingText.TYPE.HEADING_1} spacingType={[HeadingText.SPACING_TYPE.EXTRA_LARGE,HeadingText.SPACING_TYPE.OMIT]}>
+                      Oops looks like we hit some limits!
+                  </HeadingText>
+                  <BlockText type={BlockText.TYPE.PARAGRAPH} spacingType={[HeadingText.SPACING_TYPE.EXTRA_LARGE,HeadingText.SPACING_TYPE.OMIT]}>
                       We can extract only 1000 Metric Names for each NR account.
                       It seems we have already reached this limit for the following accounts: 
                       <strong> {this.state.accountsExceedingLimit}</strong>.
                       Please narrow down your scope if you would like to access all available metrics.
                   </BlockText>
-                  <Button onClick={this._onClose}>Close</Button>
+                  <Button type={Button.TYPE.DESTRUCTIVE} onClick={this._onClose}>Close</Button>
               </Modal>
             </>
         )
