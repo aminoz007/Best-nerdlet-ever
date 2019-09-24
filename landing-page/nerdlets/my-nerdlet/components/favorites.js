@@ -37,7 +37,6 @@ export default class Favorites extends React.Component {
 
     componentDidMount() {
         downloadSelection().then(result => {
-            console.log(result)
             if(result && result.data) {
                 this.setState({favoriteSelected:true})
                 this.props.favSelected(result.data)

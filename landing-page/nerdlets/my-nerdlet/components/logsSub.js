@@ -74,24 +74,8 @@ export default class LogsSub extends React.Component {
     }
 
     render() {
-      console.log(this.props.row)
       return (
         <div>
-        <EntityByGuidQuery entityGuid={"MjI1NDk5M3xBUE18QVBQTElDQVRJT058MzEwMDIyOTE3"}>
-          {({loading, error, data}) => {
-              console.log([loading, data, error]); //eslint-disable-line
-              if (loading) {
-                  console.log(loading)
-                  return null
-              }
-              if (error) {
-                  console.log(error)
-                  return null
-              }
-              console.log(data)
-              return null
-          }}
-          </EntityByGuidQuery>
           {this.state.expandedRow ? 
            this.getDetails(): 
           <Spinner type={Spinner.TYPE.DOT} />}

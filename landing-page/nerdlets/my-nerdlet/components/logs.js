@@ -30,7 +30,7 @@ export default class Logs extends React.Component {
                 showPagination={false}
                 freezeWhenExpanded={true}
                 style={{
-                  height: "400px"
+                  height: "500px"
                 }}
                 SubComponent={(row) => {
                     return <LogsSub row={row}/>
@@ -69,7 +69,6 @@ export default class Logs extends React.Component {
     render() {
       const { data } = this.props
       const columns = this.columns(data[0])
-      console.log(data)
 
       return  <Grid className="logs">
                   <GridItem columnSpan={12} className="title">

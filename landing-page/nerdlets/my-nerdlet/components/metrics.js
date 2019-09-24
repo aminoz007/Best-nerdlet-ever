@@ -48,11 +48,9 @@ export default class Metrics extends React.Component {
 
     renderDashboard(accountId, metric) {
         const since = ` SINCE ${this.props.duration/1000/60} MINUTES AGO `
-        console.log(since)
         const listScopes = this.props.scopes.map(scope => `'${scope}'`).reduce((acc,current) => `${current},${acc}`)
         const countQuery = `FROM MetricRaw SELECT count(\`${metric}\`) where rfc190Scope in (${listScopes}) TIMESERIES ${since}`
         const sumQuery = `FROM MetricRaw SELECT sum(\`${metric}\`) where rfc190Scope in (${listScopes}) TIMESERIES ${since}`
-        console.log(countQuery)
         return  <ChartGroup>
                     <Grid>
                         <GridItem columnSpan={12} style={{marginTop: "50px"}}>
@@ -83,7 +81,6 @@ export default class Metrics extends React.Component {
     }
 
     openInsights(query) {
-        console.log(query)
         const nerdletWithState = {
             id: 'wanda-data-exploration.data-explorer',
             urlState: {initialNrqlValue:query, initialAccountId: this.state.currentAccount, initialActiveInterface:"nrqlEditor"}

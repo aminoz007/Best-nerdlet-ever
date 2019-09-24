@@ -84,8 +84,6 @@ const formatRfcAtt = (attributesArray) => {
 // Make sure not to filter the current table where the selection is made 
 const filterAttrs = (rawData, selectedRows, formattedData) => {
     const filters = selectedRows.selected
-    console.log(filters)
-    console.log(selectedRows)
     const filteredRawData = []
     rawData.forEach(attr => {
         const obj = {}
@@ -109,7 +107,6 @@ const filterAttrs = (rawData, selectedRows, formattedData) => {
             filteredRawData.push(obj)
         }
     })
-    console.log(filteredRawData)
     const filteredDataFormatted = formatRfcAtt(filteredRawData)
     // Do not filter current list and get bigger list in case of deselection
     if (formattedData[selectedRows.lastSelectedTab]>filteredDataFormatted[selectedRows.lastSelectedTab]) {

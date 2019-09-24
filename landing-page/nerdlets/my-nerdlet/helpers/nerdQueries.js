@@ -21,7 +21,6 @@ const getScopes = (duration) => {
                     const filteredRes = results.map(res => ({accountId:res.accountId, scopes: res.members})).filter(row => row.scopes.length)
                     rfcScopeValues.push.apply(rfcScopeValues,filteredRes)
                 })
-                console.log(rfcScopeValues)
                 resolve(rfcScopeValues)
             })
         })
@@ -50,8 +49,6 @@ const getData = (scopesByAcct, dataType, duration) => {
 const getLogById = (guid, messageId) => {
     return new Promise(function(resolve, reject) {
         EntityByGuidQuery.query({entityGuid:guid}).then(entity => {
-            console.log(entity)
-            console.log(guid)
             const result = findNested(entity, 'entities')
             const acctId = result[0].accountId
             if(acctId){
@@ -119,7 +116,6 @@ const _buildGraphQuery = (data, dataType, duration) => {
             }}`
         requests.push(graphQ)
     }
-    console.log(requests)
     const promises = []
     requests.forEach(request => {
         promises.push(NerdGraphQuery.query({ query: request }))

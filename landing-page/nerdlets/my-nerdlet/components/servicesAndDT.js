@@ -42,7 +42,6 @@ export default class ServicesAndDT extends React.Component {
         if (!data.active) {
             getEntitiesByScope(currentScope).then(data => this.setState({currentDisplayedEntities:data, isLoading:false}))
         }
-        console.log(currentScope)
     }
 
     onEntityClick(e, data) {
