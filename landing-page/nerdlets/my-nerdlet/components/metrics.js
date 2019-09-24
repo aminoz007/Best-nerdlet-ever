@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Stack, StackItem, LineChart, Dropdown, DropdownItem, navigation, ChartGroup} from 'nr1';
+import {Stack, StackItem, LineChart, Dropdown, DropdownItem, navigation, ChartGroup, Grid, GridItem} from 'nr1';
 import { arrangeIntoTree } from '../helpers/treeStruct';
 import { getAccounts } from '../helpers/utils';
 import TreeMenu from 'react-simple-tree-menu';
@@ -15,7 +15,7 @@ export default class Metrics extends React.Component {
     constructor(Props) {
         super(Props)
         this.state = {
-            currentSelection: null,
+            currentSelection: null, 
             displayDashboard: false,
             currentAccount: null,
             accounts: []
@@ -54,34 +54,31 @@ export default class Metrics extends React.Component {
         const sumQuery = `FROM MetricRaw SELECT sum(\`${metric}\`) where rfc190Scope in (${listScopes}) TIMESERIES ${since}`
         console.log(countQuery)
         return  <ChartGroup>
-                    <Stack
-                    verticalType={Stack.VERTICAL_TYPE.FILL}
-                    directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                    //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
-                    gapType={Stack.GAP_TYPE.NONE}
-                    className="metrics">
-                        <StackItem>
+                    <Grid>
+                        <GridItem columnSpan={12} style={{marginTop: "50px"}}>
                             <Dropdown title="Accounts:">
                                 {this.state.accounts.map((account,i) => <DropdownItem key={i} onClick={() => this.onAccountChange(account)}>{account.toString()}</DropdownItem>)}
                             </Dropdown>
-                        </StackItem>
-                        <StackItem style={{height:"250px"}}>
+                        </GridItem>
+                        <GridItem columnSpan={12}>
                             <LineChart
                                 accountId={accountId}
                                 query={countQuery}
                                 style={{marginTop: "20px"}}
+                                fullWidth
                                 onClickLine={()=>this.openInsights(countQuery)}
                             />
-                        </StackItem>
-                        <StackItem style={{height:"250px"}}>
+                        </GridItem>
+                        <GridItem columnSpan={12}>
                             <LineChart
                                 accountId={accountId}
                                 query={sumQuery}
                                 style={{marginTop: "20px"}}
+                                fullWidth
                                 onClickLine={()=>this.openInsights(sumQuery)}
                             />
-                        </StackItem>
-                    </Stack>
+                        </GridItem>
+                    </Grid>
                 </ChartGroup>
     }
 
@@ -101,18 +98,13 @@ export default class Metrics extends React.Component {
         return  (
             <>
                 <ModalMsg data={data}/>
-                <Stack
-                horizontalType={Stack.HORIZONTAL_TYPE.FILL}
-                directionType={Stack.DIRECTION_TYPE.HORIZONTAL} 
-                //distributionType={Stack.DISTRIBUTION_TYPE.FILL}
-                gapType={Stack.GAP_TYPE.NONE}>
-                    <StackItem>
+                <Grid>
+                    <GridItem columnSpan={6}>
                         <Stack
-                        verticalType={Stack.VERTICAL_TYPE.FILL}
                         directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                        //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
-                        gapType={Stack.GAP_TYPE.NONE}
-                        className="metrics">
+                        horizontalType={Stack.HORIZONTAL_TYPE.FILL}
+                        fullWidth
+                        gapType={Stack.GAP_TYPE.NONE}>
                             <StackItem className="title">
                                 <b>Metrics:</b>
                             </StackItem>
@@ -123,11 +115,11 @@ export default class Metrics extends React.Component {
                                 {this.state.currentSelection}
                             </StackItem>}
                         </Stack>
-                    </StackItem>
-                    <StackItem>
+                    </GridItem>
+                    <GridItem columnSpan={6}>
                         {this.state.displayDashboard && this.renderDashboard(this.state.currentAccount, this.state.currentSelection)}
-                    </StackItem>
-                </Stack>
+                    </GridItem>
+                </Grid>
             </>
         )
     }    

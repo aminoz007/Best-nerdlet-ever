@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from "react-table";
 import 'react-table/react-table.css';
-import {Stack, StackItem} from 'nr1';
+import {Grid, GridItem} from 'nr1';
 import { LOGS } from '../helpers/constants';
 import { dateFormattingInLogs } from '../helpers/utils';
 import LogsSub from './logsSub';
@@ -71,18 +71,13 @@ export default class Logs extends React.Component {
       const columns = this.columns(data[0])
       console.log(data)
 
-      return  <Stack
-                    verticalType={Stack.VERTICAL_TYPE.FILL}
-                    directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                    fullWidth={true}
-                    gapType={Stack.GAP_TYPE.NONE}
-                    className="logs">
-                  <StackItem className="title">
+      return  <Grid className="logs">
+                  <GridItem columnSpan={12} className="title">
                     <b>Latest Logs:</b>
-                  </StackItem>
-                  <StackItem>
+                  </GridItem>
+                  <GridItem columnSpan={12}>
                     {this.logTable(dateFormattingInLogs(data), columns)}
-                  </StackItem>
-                </Stack>
+                  </GridItem>
+              </Grid>
     }    
 }

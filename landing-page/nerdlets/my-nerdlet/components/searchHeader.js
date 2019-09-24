@@ -42,7 +42,7 @@ export default class SearchHeader extends React.Component {
                 style={{
                     height: "300px", // This will force the table body to overflow and scroll, since there is not enough room
                     width: "300px",
-                    marginTop: "40px"
+                    marginTop: "80px"
                   }}
                 
                 // Select/Deslect rows
@@ -89,11 +89,10 @@ export default class SearchHeader extends React.Component {
       return  <React.Fragment>
                 <Favorites data={this.state} favSelected={this.onFavSelected} />
                 <Stack
-                    horizontalType={Stack.HORIZONTAL_TYPE.FILL}
-                    //directionType={Stack.DIRECTION_TYPE.HORIZONTAL}
-                    //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
+                    horizontalType={Stack.HORIZONTAL_TYPE.CENTER}
+                    fullWidth
                     gapType={Stack.GAP_TYPE.EXTRA_LARGE}
-                    >
+                    > 
                   <StackItem>
                     {this.tableElem(data[RFC_190_SCOPE.ENVIRONMENT.ACCESSOR], RFC_190_SCOPE.ENVIRONMENT.HEADER, RFC_190_SCOPE.ENVIRONMENT.ACCESSOR)}
                   </StackItem>
@@ -111,12 +110,12 @@ export default class SearchHeader extends React.Component {
                   </StackItem>
                 </Stack>
 
-                <Button className = "button-search"
+              <Button className = "button-search"
                   onClick={onSearchClick}
                   type={Button.TYPE.PRIMARY}
                   iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__SEARCH}>
                   Search
-                </Button>
+              </Button>
               </React.Fragment>
     }    
 }

@@ -104,6 +104,7 @@ export default class ServicesAndDT extends React.Component {
                     <LineChart
                         accountId={accountId}
                         query={responseTimeQ}
+                        fullWidth
                         style={{marginTop: "20px"}}
                     />
                 </GridItem>
@@ -112,6 +113,7 @@ export default class ServicesAndDT extends React.Component {
                     <LineChart
                         accountId={accountId}
                         query={throughtputHostQ}
+                        fullWidth
                         style={{marginTop: "20px"}}
                     />
                 </GridItem>
@@ -120,6 +122,7 @@ export default class ServicesAndDT extends React.Component {
                     <AreaChart
                         accountId={accountId}
                         query={errorsCodeQ}
+                        fullWidth
                         style={{marginTop: "20px"}}
                     />
                 </GridItem>
@@ -128,6 +131,7 @@ export default class ServicesAndDT extends React.Component {
                     <PieChart
                         accountId={accountId}
                         query={errorsMsgsQ}
+                        fullWidth
                         style={{marginTop: "20px"}}
                     />
                 </GridItem>
@@ -136,6 +140,7 @@ export default class ServicesAndDT extends React.Component {
                     <TableChart
                         accountId={accountId}
                         query={breakDownTranQ}
+                        fullWidth
                         style={{marginTop: "20px"}}
                     />
                 </GridItem>
@@ -154,18 +159,13 @@ export default class ServicesAndDT extends React.Component {
     }
     
     render() {
-        return  <Stack
-                    verticalType={Stack.VERTICAL_TYPE.FILL}
-                    directionType={Stack.DIRECTION_TYPE.VERTICAL} 
-                    //distributionType={Stack.DISTRIBUTION_TYPE.CENTER}
-                    gapType={Stack.GAP_TYPE.NONE}
-                    className="logs">
-                    <StackItem className="title">
+        return  <Grid className="logs">
+                    <GridItem columnSpan={12} className="title">
                         <b>Services and DT Overview:</b>
-                    </StackItem>
-                    <StackItem>
+                    </GridItem>
+                    <GridItem columnSpan={12} >
                         {this.renderList()}
-                    </StackItem>
-                </Stack>
+                    </GridItem>
+                </Grid>
     }    
 }

@@ -3,6 +3,5 @@
     "id": "my-launcher",
     "description": "Start exploring your data!!",
     "displayName": "Riot's Landing Page",
-    "icon": "location_location_home",
     "rootNerdletId": "0acb95f7-6c4a-4d12-aa04-d11e97859a36.my-nerdlet"
 }

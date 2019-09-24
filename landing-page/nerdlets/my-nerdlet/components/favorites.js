@@ -23,7 +23,8 @@ export default class Favorites extends React.Component {
         if (data && Object.keys(data.selected).filter(key =>data.selected[key].length).length) {   
             uploadSelection(data).then(() => this.setState({favoriteSelected:true}))
         } else {
-            Toast.showToast('Selection Needed', {
+            Toast.showToast({
+                title: 'Selection Needed',
                 description: 'Nothing to save!!',
                 type: Toast.TYPE.CRITICAL
             })
@@ -36,9 +37,10 @@ export default class Favorites extends React.Component {
 
     componentDidMount() {
         downloadSelection().then(result => {
-            if(result && result.data.actor.nerdStorage.document) {
+            console.log(result)
+            if(result && result.data) {
                 this.setState({favoriteSelected:true})
-                this.props.favSelected(result.data.actor.nerdStorage.document)
+                this.props.favSelected(result.data)
             } else {
                 this.setState({favoriteSelected:false})
             }

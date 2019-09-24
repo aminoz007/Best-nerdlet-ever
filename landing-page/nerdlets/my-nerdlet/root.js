@@ -39,7 +39,8 @@ export default class MyNerdlet extends React.Component {
     onSearchClick() {
         if (this.state.selection && Object.keys(this.state.selection.selected).filter(key => this.state.selection.selected[key].length).length) {  
             if(getScopesFromObject(this.state.filteredRawData).length > MAX_SCOPES) {
-                Toast.showToast('Maximum reached', {
+                Toast.showToast({
+                    title: 'Maximum reached',
                     description: 'You cannot select more than 100 scope!!',
                     type: Toast.TYPE.CRITICAL
                 })
@@ -51,7 +52,8 @@ export default class MyNerdlet extends React.Component {
                 this.setState({scopes: getScopesFromObject(this.state.filteredRawData)})
             }
         } else {
-            Toast.showToast('Selection Needed', {
+            Toast.showToast({
+                title: 'Selection Needed',
                 description: 'Please select your scope!!',
                 type: Toast.TYPE.CRITICAL
             })
