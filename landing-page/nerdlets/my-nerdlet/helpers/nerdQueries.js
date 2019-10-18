@@ -16,10 +16,22 @@ const getScopes = (duration) => {
             const rfcScopePromises = _buildGraphQuery(accounts.map(acct => acct.id), DATA_TYPE.SCOPES, duration)
             Promise.all(rfcScopePromises).then(values => {
                 const rfcScopeValues = []
+                console.log(values)
                 values.forEach(value => {
-                    const results = findNested(value, 'results') //Get all "member" values which contains the rfcScope attribute in a nested objects
-                    const filteredRes = results.map(res => ({accountId:res.accountId, scopes: res.members})).filter(row => row.scopes.length)
-                    rfcScopeValues.push.apply(rfcScopeValues,filteredRes)
+                    if (value.data) {
+                        Object.keys(value.data.actor).map(account => {
+                            if(account.startsWith('account')){   // Appolo returns things like __typname, we have to ignore them
+                                const scopes = value.data.actor[account].nrql.results.map(result => result.member)
+                                const parsedData = {accountId: value.data.actor[account].id, scopes: scopes}
+                                if (scopes.length) {
+                                    rfcScopeValues.push(parsedData)
+                                }
+                            } 
+                        })
+                    }
+                    //const results = findNested(value, 'results') //Get all "member" values which contains the rfcScope attribute in a nested objects
+                    //const filteredRes = results.map(res => ({accountId:res.Id, scopes: res.members})).filter(row => row.scopes.length)
+                    //rfcScopeValues.push.apply(rfcScopeValues,filteredRes)
                 })
                 resolve(rfcScopeValues)
             })
@@ -36,9 +48,24 @@ const getData = (scopesByAcct, dataType, duration) => {
         const dataPromises = _buildGraphQuery(scopesByAcct, dataType, duration)
         Promise.all(dataPromises).then(values => {
             const data = []
+            console.log(values)
             values.forEach(value => {
-                let dataResults = findNested(value, 'results') //Get all "results" values which contains the data
-                data.push.apply(data, dataResults)     
+                if(dataType === DATA_TYPE.METRICS) {
+                    if(value.data){
+                        Object.keys(value.data.actor).map(account => {
+                            if(account.startsWith('account')){   // Appolo returns things like __typname, we have to ignore them
+                                const metrics = value.data.actor[account].nrql.results.map(result => result.member)
+                                const parsedData = {accountId: value.data.actor[account].id, members: metrics}
+                                if (metrics.length) {
+                                    data.push(parsedData)
+                                }
+                            } 
+                        })
+                    }
+                } else {
+                    let dataResults = findNested(value, 'results') //Get all "results" values which contains the data
+                    data.push.apply(data, dataResults) 
+                }    
             })
             resolve(data)
         })
@@ -116,9 +143,10 @@ const _buildGraphQuery = (data, dataType, duration) => {
             }}`
         requests.push(graphQ)
     }
+
     const promises = []
     requests.forEach(request => {
-        promises.push(NerdGraphQuery.query({ query: request }))
+        promises.push(NerdGraphQuery.query({ query: request, fetchPolicyType:NerdGraphQuery.FETCH_POLICY_TYPE.NO_CACHE }))
     })
     return promises
 }
@@ -140,11 +168,12 @@ const _buildMetricsQuery = (data, since) => {
     return data.map((row,index) => {
         //Careful, reduce return the same value if array.length=1
         const listScopes = row.scopes.map(scope => `'${scope}'`).reduce((acc,current) => `${current},${acc}`)
-        const nrqlQuery = `FROM MetricRaw SELECT uniques(metricName),${row.accountId} as accountId where rfc190Scope in (${listScopes}) ${since}`
+        const nrqlQuery = `FROM Metric SELECT uniques(metricName) where rfc190Scope in (${listScopes}) ${since}`
         return `account${index}:account(id: ${row.accountId}) {
             nrql(query: "${nrqlQuery}") {
             results
             }
+            id
         }`
     })
 }
@@ -152,9 +181,10 @@ const _buildMetricsQuery = (data, since) => {
 const _buildScopesQuery = (data, since) => {
     return data.map((account,index) => 
     `account${index}:account(id: ${account}) {
-        nrql(query: "FROM MetricRaw SELECT uniques(rfc190Scope), ${account} as accountId ${since}") {
+        nrql(query: "FROM Metric SELECT uniques(rfc190Scope) ${since}") {
         results
         }
+        id
     }`)
 }
 

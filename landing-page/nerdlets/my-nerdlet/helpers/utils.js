@@ -2,17 +2,21 @@ import { RFC_190_SCOPE } from "./constants";
 
 // For a deep object, this function will return all properties for a giving key
 const findNested = (obj, key) => {
-    if (obj.hasOwnProperty(key))
-        return obj[key];
+    if (obj) {
+        if (obj.hasOwnProperty(key))
+            return obj[key];
 
-    var res = [];
-    Object.keys(obj).forEach(k => {
-        let v = obj[k]
-        if (typeof v == "object" && (v = findNested(v, key)).length)
-            res.push.apply(res, v);
-    });
+        var res = [];
+        Object.keys(obj).forEach(k => {
+            let v = obj[k]
+            if (typeof v == "object" && (v = findNested(v, key)).length)
+                res.push.apply(res, v);
+        });
 
-    return res;
+        return res;
+    } else {
+        return []
+    }
 }
 
 /** Transform RFC 190 Scope attributes into an object that can be used by searchHeader component.

@@ -80,6 +80,7 @@ export default class MyNerdlet extends React.Component {
     componentDidMount(){
         const { duration } = this.props.launcherUrlState.timeRange
         getScopes(duration).then(data => {
+            console.log("didMount")
             const formattedData = formatRfcAtt(data)
             this.setState({formattedData:formattedData, rawData:data})
         })
@@ -90,6 +91,7 @@ export default class MyNerdlet extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.props.launcherUrlState.timeRange !== prevProps.launcherUrlState.timeRange) {
             const { duration } = this.props.launcherUrlState.timeRange  
+            console.log("didupdate")
             getScopes(duration).then(data => {
                 const formattedData = formatRfcAtt(data)
                 if (this.state.selection) {
